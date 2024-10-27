@@ -10,6 +10,8 @@ import { useEndpoint } from '@/hooks/endpoint-hook'
 import { useCurrentWorkspace } from '@/store/workspace'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTenant } from '@/hooks/tenant-hook'
+import { Separator } from './ui/separator'
+import useUser from '@/hooks/user-hook'
 
 const DashboardSidebar = () => {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ const DashboardSidebar = () => {
   const { workspaceService } = useEndpoint();
   const {tenant} = useTenant();
   const currentUser = "james.corezo";
+  const user = useUser();
 
   const fetchworkspacesByUser = async () => {
     const workspaces = await workspaceService.getWorkspaceByTenantUser(tenant.id, currentUser);
@@ -35,7 +38,7 @@ const DashboardSidebar = () => {
   }
 
   return (
-    <Sidebar>
+    <Sidebar collapsible='icon'>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -44,7 +47,7 @@ const DashboardSidebar = () => {
                 <SidebarMenuButton>
                   {currentWorkspace ? (
                     <>
-                      <img className='w-5 h-5 rounded-lg' src={currentWorkspace.avatar || getAvatarUrl(currentWorkspace.name)} />
+                      <img className='w-7 h-7 rounded-lg' src={currentWorkspace.avatar || getAvatarUrl(currentWorkspace.name)} />
                       <span>{currentWorkspace.name}</span>
                     </>
                   ) : "Select workspace"}
@@ -55,7 +58,7 @@ const DashboardSidebar = () => {
               <DropdownMenuSeparator />
                 {workspaces.data?.map((workspace) => (
                   <DropdownMenuItem onClick={() => handleChangeWorkspace(workspace.id)} key={workspace.id}>
-                    <img className='w-10 h-10 rounded-lg' src={workspace.avatar || getAvatarUrl(workspace.name)} />
+                    <img className='w-8 h-8 rounded-lg' src={workspace.avatar || getAvatarUrl(workspace.name)} />
                     <span>{workspace.name}</span>
                   </DropdownMenuItem>
                 ))}
@@ -69,7 +72,7 @@ const DashboardSidebar = () => {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-
+      <Separator />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -91,7 +94,7 @@ const DashboardSidebar = () => {
         <SidebarGroup />
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className='mb-2'>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton>
@@ -102,7 +105,7 @@ const DashboardSidebar = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton>
-                    <User2 /> Username
+                    <User2 /> {user?.username}
                     <ChevronUp className="ml-auto" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
@@ -121,6 +124,13 @@ const DashboardSidebar = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+            </SidebarMenuItem>
+            <Separator className="my-2" />
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <img className='h-7 w-7 rounded-lg' src={getAvatarUrl(tenant.name)} />
+                <span>{tenant.name}</span>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>

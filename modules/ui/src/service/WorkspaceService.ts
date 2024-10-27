@@ -23,7 +23,7 @@ export class WorkspaceService {
         console.log('userId', userId);
         return Promise.resolve([
             {
-                id: 'ws-1',
+                id: 'personal',
                 name: 'Personal Workspace',
                 owner: "james.corezo",
                 tenantId: "2"

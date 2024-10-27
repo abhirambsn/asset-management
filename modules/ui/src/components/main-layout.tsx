@@ -4,9 +4,10 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useTenant } from "@/hooks/tenant-hook";
 import { useEffect } from "react";
 import { useCurrentWorkspace } from "@/store/workspace";
+import { buildTitle } from "@/utils/helper";
 
 const MainLayout = () => {
-  const tenant = useTenant();
+  const {tenant} = useTenant();
   const navigate = useNavigate();
 
   const {setCurrentWorkspace} = useCurrentWorkspace();
@@ -23,6 +24,7 @@ const MainLayout = () => {
     const personalWorkspace = {id: 'personal', name: "Personal Workspace" };
 
     setCurrentWorkspace(personalWorkspace);
+    document.title = buildTitle(tenant.name);
 
   }, [tenant, navigate, setCurrentWorkspace]);
 

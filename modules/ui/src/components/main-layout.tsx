@@ -31,7 +31,7 @@ const MainLayout = () => {
   return (
     <SidebarProvider>
       <DashboardSidebar />
-      <main>
+      <main className="w-full">
         <SidebarTrigger />
         <Outlet />
       </main>

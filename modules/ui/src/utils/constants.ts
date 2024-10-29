@@ -51,31 +51,55 @@ export const TENANTS: TenantList = [
             {name: "Windows", id: "windows"},
             {name: "Linux", id: "linux"},
             {name: "MacOS", id: "macos"},
+            {name: "iOS", id: "ios"},
+            {name: "Android", id: "android"},
         ],
         assetModels: {
             laptop: [
                 {
                     name: "Macbook Pro 2021",
                     id: "mbp-2021",
-                    company: "",
+                    company: "Apple",
                     releaseDate: new Date("2020-10-05"),
                     specs: {}
                 }
             ],
-            mobile: [],
+            mobile: [
+                {
+                    name: "iPhone 12",
+                    id: "iph-12",
+                    company: "Apple",
+                    releaseDate: new Date("2020-10-05"),
+                    specs: {}
+                }
+            ],
         },
         assets: [
             {
                 id: "1",
                 name: "Abhiram's Laptop",
-                assetType: "laptop",
-                osType: "windows",
+                type: "laptop",
+                os: "windows",
                 osVersion: "10",
                 registrationDate: new Date(),
                 lastUpdated: new Date(),
                 model: "mbp-2021",
                 owner: "abhirambsn",
-                class: "CRITICAL"
+                class: "CRITICAL",
+                value: 143000,
+            },
+            {
+                id: "2",
+                name: "Abhiram's iPhone",
+                type: "mobile",
+                os: "ios",
+                osVersion: "18",
+                registrationDate: new Date(),
+                lastUpdated: new Date(),
+                model: "iph-12",
+                owner: "abhirambsn",
+                class: "IMPORTANT",
+                value: 65800
             }
         ],
         isDefault: false,

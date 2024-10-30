@@ -1,5 +1,5 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar'
-import { SIDEBAR_MENU } from '@/utils/constants'
+import { ADMIN_SIDEBAR_MENU, SIDEBAR_MENU } from '@/utils/constants'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { ChevronUp, Plus, User2 } from 'lucide-react'
 import { getAvatarUrl } from '@/utils/helper'
@@ -12,6 +12,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTenant } from '@/hooks/tenant-hook'
 import { Separator } from './ui/separator'
 import useUser from '@/hooks/user-hook'
+import { useBreadcrumbNav } from '@/store/breadcrumb-nav'
+import { useModalStore } from '@/store/create-modal'
 
 const DashboardSidebar = () => {
   const navigate = useNavigate();
@@ -28,14 +30,21 @@ const DashboardSidebar = () => {
 
   const workspaces = useQuery({ queryKey: ['workspaces'], queryFn: fetchworkspacesByUser, staleTime: 1000 * 60 * 60 });
   const {currentWorkspace, setCurrentWorkspace} = useCurrentWorkspace();
+  const {addToNavStack, removeFromNavStack} = useBreadcrumbNav();
 
   const handleChangeWorkspace = (workspaceId: string) => {
     const workspace = workspaces.data?.find((workspace) => workspace.id === workspaceId);
     if (workspace) {
       setCurrentWorkspace(workspace);
-      navigate(`/${workspace.id}`);
+      removeFromNavStack();
+      navigate(`/workspace/${workspace.id}`);
+      addToNavStack({name: workspace.name, path: `/workspace/${workspace.id}`});
     }
   }
+
+  const {openModal} = useModalStore();
+
+  const isAdmin = true;
 
   return (
     <Sidebar collapsible='icon'>
@@ -80,18 +89,43 @@ const DashboardSidebar = () => {
             <SidebarMenu>
               {SIDEBAR_MENU.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.url === "" ? `/${currentWorkspace?.id}` : item.url}>
+                  {!item?.action ? (
+                    <SidebarMenuButton asChild>
+                      <Link to={item.url === "" ? `/workspace/${currentWorkspace?.id}` : item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  ) : (
+                    <SidebarMenuButton onClick={() => openModal((item?.type || 'asset') as ModalType)}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup />
+        {isAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Admin Actions</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {ADMIN_SIDEBAR_MENU.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link to={item.url === "" ? `/${currentWorkspace?.id}` : item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+        </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className='mb-2'>

@@ -12,7 +12,7 @@ export const ROUTES: RouteObject[] = [
         element: <MainLayout />,
         children: [
             {
-                path: "/:workspaceId",
+                path: "/workspace/:workspaceId",
                 element: <DashboardPage />
             },
             {
@@ -22,6 +22,26 @@ export const ROUTES: RouteObject[] = [
             {
                 path: "settings",
                 element: <SettingsPage />
+            },
+            {
+                path: "users",
+                element: <div>Users</div>
+            },
+            {
+                path: "/types/hardware",
+                element: <div>Hardware</div>
+            },
+            {
+                path: "/types/models",
+                element: <div>Asset Models</div>
+            },
+            {
+                path: "/types/os",
+                element: <div>OS</div>
+            },
+            {
+                path: "/types/os-versions",
+                element: <div>OS Versions</div>
             }
         ]
     },

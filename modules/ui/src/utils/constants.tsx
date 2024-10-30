@@ -1,4 +1,5 @@
-import { Bell, Home, Search, Server, Settings } from "lucide-react";
+import { ChartConfig } from "@/components/ui/chart";
+import { Bell, CogIcon, Home, Laptop, Package, Search, Server, ServerCog, Settings, Users } from "lucide-react";
 
 export const TENANTS: TenantList = [
     {
@@ -261,6 +262,34 @@ export const TENANTS: TenantList = [
     },
 ];
 
+export const ADMIN_SIDEBAR_MENU = [
+    {
+        title: "Manage Users",
+        url: "/users",
+        icon: Users
+    },
+    {
+        title: "Manage Hardware Types",
+        url: "/types/hardware",
+        icon: ServerCog
+    },
+    {
+        title: "Manage Asset Models",
+        url: "/types/models",
+        icon: Laptop
+    },
+    {
+        title: "Manage OS Types",
+        url: "/types/os",
+        icon: Package
+    },
+    {
+        title: "Manage OS Versions",
+        url: "/types/os-versions",
+        icon: CogIcon
+    }
+]
+
 export const SIDEBAR_MENU = [
     {
         title: "Dashboard",
@@ -271,7 +300,8 @@ export const SIDEBAR_MENU = [
         title: "Add Asset to Management",
         url: "#",
         icon: Server,
-        action: () => {}
+        action: "modal",
+        type: "asset"
     },
     {
         title: "Notifications",
@@ -282,7 +312,7 @@ export const SIDEBAR_MENU = [
         title: "Search",
         url: "#",
         icon: Search,
-        action: () => {}
+        action: "search"
     },
     {
         title: "Settings",
@@ -290,3 +320,66 @@ export const SIDEBAR_MENU = [
         icon: Settings,
     }
 ];
+
+export const PERSONAL_WORKSPACE = {id: 'personal', name: "Personal Workspace", path: "/workspace/personal"};
+
+export const DONUT_CHART_DATA_SERVICE_OUTPUT_ASSET_CLASS = [
+    {classification: "CRITICAL", count: 20, fill: "#C82D4C"},
+    {classification: "IMPORTANT", count: 1, fill: "#FFD046"},
+    {classification: "NORMAL", count: 12, fill: "#09D793"},
+    {classification: "NOT_IMPORTANT", count: 30, fill: "#2D3142"}
+]
+
+export const DONUT_CHART_ASSET_CLASS_CONFIG = {
+    CRITICAL: {
+        label: "Critical",
+        color: "#C82D4C",
+    },
+    IMPORTANT: {
+        label: "Important",
+        color: "#FFD046"
+    },
+    NORMAL: {
+        label: "Normal",
+        color: "#09D793"
+    },
+    NOT_IMPORTANT: {
+        label: "Not Important",
+        color: "#2D3142"
+    }
+} satisfies ChartConfig
+
+export const DONUT_CHART_DATA_SERVICE_OUTPUT_ASSET_OWNER = [
+    {owner: "Abhiram", count: 20, fill: "hsl(var(--chart-1))"},
+    {owner: "John", count: 1, fill: "hsl(var(--chart-2))"},
+    {owner: "James", count: 12, fill: "hsl(var(--chart-3))"},
+]
+
+export const DONUT_CHART_ASSET_OWNER_CONFIG = {
+    Abhiram: {
+        label: "Abhiram",
+        color: "hsl(var(--chart-1))"
+    },
+    John: {
+        label: "John",
+        color: "hsl(var(--chart-2))"
+    },
+    James: {
+        label: "James",
+        color: "hsl(var(--chart-3))"
+    }
+}
+
+export const DATA_SERVICE_STATS = [
+    {col: "Total Assets", value: "20"},
+    {col: "Total Users", value: "2"},
+    {col: "Total Asset Types", value: "3"},
+    {col: "Total OS Types", value: "3"},
+    {col: "Total Asset Models", value: "2"},
+]
+
+export const OWNER_DATA = [
+    {id: "abhirambsn", name: "Abhiram"},
+    {id: "john", name: "John"},
+    {id: "james.corezo", name: "James"}
+]

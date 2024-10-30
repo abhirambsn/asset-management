@@ -71,3 +71,28 @@ type Tenant = {
 }
 
 type TenantList = Tenant[];
+
+type BreadcrumbNavStack = {
+    name: string;
+    path?: string;
+}
+
+type BreadcrumbNav = {
+    breadcrumbNavStack: BreadcrumbNavStack[];
+    addToNavStack: (item: BreadcrumbNavStack) => void;
+    removeFromNavStack: () => void;
+}
+
+type TableData = {
+    col: string;
+    value: string;
+}
+
+type ModalState = {
+    isOpen: boolean;
+    type: ModalType;
+    openModal: (type: ModalType) => void;
+    closeModal: () => void;
+}
+
+type ModalType = "asset" | "assetType" | "os" | "osVersion" | "user" | "workspace" | "";

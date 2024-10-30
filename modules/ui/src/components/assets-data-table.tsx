@@ -117,7 +117,7 @@ export const columns: ColumnDef<Asset>[] = [
   },
   {
     accessorKey: "class",
-    header: "Class",
+    header: "Classification",
     cell: ({ row }) => (
       <Badge className="capitalize bg-red-500">{row.getValue("class")}</Badge>
     ),
@@ -150,7 +150,7 @@ export const columns: ColumnDef<Asset>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div>{row.getValue("registrationDate")?.toString()}</div>,
+    cell: ({ row }) => <div className="ml-4">{(row.getValue("registrationDate") as Date).toLocaleDateString()}</div>,
   },
   {
     accessorKey: "lastUpdated",
@@ -165,13 +165,13 @@ export const columns: ColumnDef<Asset>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div>{row.getValue("registrationDate")?.toString()}</div>,
+    cell: ({ row }) => <div className="ml-4">{(row.getValue("registrationDate") as Date).toLocaleDateString()}</div>,
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original
+      const asset = row.original
 
       return (
         <DropdownMenu>
@@ -184,13 +184,12 @@ export const columns: ColumnDef<Asset>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(asset.id)}
             >
-              Copy payment ID
+              Copy Asset ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>View Asset Details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

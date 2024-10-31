@@ -12,15 +12,15 @@ import { PERSONAL_WORKSPACE } from "@/utils/constants";
 import CreateAssetModal from "@/components/forms/create-asset";
 
 const MainLayout = () => {
-  const {tenant} = useTenant();
+  const {tenant, subdomain} = useTenant();
   const navigate = useNavigate();
 
   const {setCurrentWorkspace} = useCurrentWorkspace();
   const {addToNavStack} = useBreadcrumbNav();
 
   useEffect(() => {
-    if (!tenant) {
-      navigate("/register");
+    if (!tenant || subdomain === '') {
+      navigate("/landing");
     }
     document.title = buildTitle(tenant.name);
 
@@ -30,7 +30,7 @@ const MainLayout = () => {
       addToNavStack(PERSONAL_WORKSPACE);
       return;
     }
-  }, [tenant, navigate, setCurrentWorkspace, addToNavStack]);
+  }, [tenant, navigate, setCurrentWorkspace, addToNavStack, subdomain]);
 
   return (
     <SidebarProvider>

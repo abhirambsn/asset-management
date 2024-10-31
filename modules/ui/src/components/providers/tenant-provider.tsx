@@ -7,6 +7,7 @@ import { createContext } from "react";
 
 type TenantProviderState = {
     tenant: Tenant
+    subdomain?: string
 }
 
 const initialState: TenantProviderState = { tenant: TENANTS[0] }
@@ -40,7 +41,7 @@ export const TenantProvider = ({
     }
 
     return (
-        <TenantProviderContext.Provider value={{tenant}} {...props}>
+        <TenantProviderContext.Provider value={{tenant, subdomain}} {...props}>
             {children}
         </TenantProviderContext.Provider>
     )

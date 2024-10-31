@@ -1,9 +1,10 @@
 import MainLayout from "@/components/main-layout";
 import AssetTypesPage from "@/pages/asset-types";
 import DashboardPage from "@/pages/dashboard";
+import NotFoundPage from "@/pages/error/not-found-404";
+import LandingPage from "@/pages/landing-page";
 import LoginPage from "@/pages/login";
 import ModelsPage from "@/pages/models";
-import NotificationPage from "@/pages/notification";
 import OSPage from "@/pages/os"; 
 import RegisterPage from "@/pages/register";
 import SettingsPage from "@/pages/settings";
@@ -14,47 +15,63 @@ export const ROUTES: RouteObject[] = [
     {
         path: "/",
         element: <MainLayout />,
+        errorElement: <NotFoundPage />,
         children: [
             {
                 path: "/workspace/:workspaceId",
-                element: <DashboardPage />
-            },
-            {
-                path: "notifications",
-                element: <NotificationPage />
+                element: <DashboardPage />,
+                errorElement: <NotFoundPage />,
             },
             {
                 path: "settings",
-                element: <SettingsPage />
+                element: <SettingsPage />,
+                errorElement: <NotFoundPage />,
             },
             {
                 path: "settings/:section",
-                element: <SettingsPage />
+                element: <SettingsPage />,
+                errorElement: <NotFoundPage />,
             },
             {
                 path: "users",
-                element: <UsersPage />
+                element: <UsersPage />,
+                errorElement: <NotFoundPage />,
             },
             {
                 path: "/types/hardware",
-                element: <AssetTypesPage />
+                element: <AssetTypesPage />,
+                errorElement: <NotFoundPage />,
             },
             {
                 path: "/types/models",
-                element: <ModelsPage />
+                element: <ModelsPage />,
+                errorElement: <NotFoundPage />,
             },
             {
                 path: "/types/os",
-                element: <OSPage />
+                element: <OSPage />,
+                errorElement: <NotFoundPage />,
             },
         ]
     },
     {
         path: "/login",
-        element: <LoginPage />
+        element: <LoginPage />,
+        errorElement: <NotFoundPage />,
     },
     {
         path: '/register',
-        element: <RegisterPage />
+        element: <RegisterPage />,
+        errorElement: <NotFoundPage />,
+    },
+    {
+        path: "/landing",
+        element: <LandingPage />,
+        errorElement: <NotFoundPage />,
+    },
+    {
+        path: "*",
+        element: <NotFoundPage />,
+        errorElement: <NotFoundPage />
     }
 ];

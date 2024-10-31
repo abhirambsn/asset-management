@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,11 +13,11 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+} from "@tanstack/react-table";
+import { ChevronDown, DeleteIcon, MoreHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -26,8 +26,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -35,12 +35,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Link } from "react-router-dom"
-import { Badge } from "./ui/badge"
+} from "@/components/ui/table";
 
-
-export const columns: ColumnDef<Asset>[] = [
+export const columns: ColumnDef<AssetType>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -65,113 +62,18 @@ export const columns: ColumnDef<Asset>[] = [
   },
   {
     accessorKey: "id",
-    header: () => (<></>),
-    cell: () => (<></>),
+    header: "ID",
     enableHiding: false,
-    },
+  },
   {
     accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => (
-        <Link to={`/asset/${row.getValue('id')}`}>
-            <div className="hover:underline">{row.getValue('name')}</div>
-        </Link>
-    )
-  },
-  {
-    accessorKey: "owner",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Owner
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div>{row.getValue("owner")}</div>,
-  },
-  {
-    accessorKey: "os",
-    header: "OS",
-    cell: ({ row }) => (
-        <Link to={`/os/${row.getValue('os')}`}>
-            <div className="hover:underline">{row.getValue('os')}</div>
-        </Link>
-    )
-  },
-  {
-    accessorKey: "osVersion",
-    header: "OS Version",
-  },
-  {
-    accessorKey: "model",
-    header: "Model",
-    cell: ({ row }) => (
-        <Link to={`/model/${row.getValue('model')}`}>
-            <div className="hover:underline">{row.getValue('model')}</div>
-        </Link>
-    )
-  },
-  {
-    accessorKey: "class",
-    header: "Classification",
-    cell: ({ row }) => (
-      <Badge className="capitalize bg-red-500">{row.getValue("class")}</Badge>
-    ),
-  },
-  {
-    accessorKey: "value",
-    header: () => <div className="text-right">Asset Value</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("value"))
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-      }).format(amount)
-
-      return <div className="text-right font-medium">{formatted}</div>
-    },
-  },
-  {
-    accessorKey: "registrationDate",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Registration Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="ml-4">{(row.getValue("registrationDate") as Date).toLocaleDateString()}</div>,
-  },
-  {
-    accessorKey: "lastUpdated",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Last Updated
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="ml-4">{(row.getValue("registrationDate") as Date).toLocaleDateString()}</div>,
+    header: "Asset Type Name",
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const asset = row.original
+      const assetType = row.original;
 
       return (
         <DropdownMenu>
@@ -184,33 +86,36 @@ export const columns: ColumnDef<Asset>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(asset.id)}
+              onClick={() => navigator.clipboard.writeText(assetType.id)}
             >
-              Copy Asset ID
+              Copy Asset Type ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View Asset Details</DropdownMenuItem>
+            <DropdownMenuItem className="text-red-500">
+              <DeleteIcon className="h-4 w-4" />
+              <span>Delete Asset Type</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];
 
-type AssetDataTableProps<TValue> = {
-    data: TValue[]
-}
+type AssetTypeDataTableProps<TValue> = {
+  data: TValue[];
+};
 
-export default function AssetDataTable({
-    data
-}: AssetDataTableProps<Asset>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+export default function AssetTypesDataTable({
+  data,
+}: AssetTypeDataTableProps<AssetType>) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
+  );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
@@ -229,13 +134,13 @@ export default function AssetDataTable({
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Search Asset by Name..."
+          placeholder="Search Asset Types by Name..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
@@ -264,7 +169,7 @@ export default function AssetDataTable({
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -284,7 +189,7 @@ export default function AssetDataTable({
                             header.getContext()
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -344,5 +249,5 @@ export default function AssetDataTable({
         </div>
       </div>
     </div>
-  )
+  );
 }

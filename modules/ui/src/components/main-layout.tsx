@@ -9,7 +9,7 @@ import Navbar from "./navbar";
 import { Separator } from "./ui/separator";
 import { useBreadcrumbNav } from "@/store/breadcrumb-nav";
 import { PERSONAL_WORKSPACE } from "@/utils/constants";
-import CreateAssetModal from "./create-asset-modal";
+import CreateAssetModal from "@/components/forms/create-asset";
 
 const MainLayout = () => {
   const {tenant} = useTenant();

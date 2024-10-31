@@ -1,9 +1,13 @@
 import MainLayout from "@/components/main-layout";
+import AssetTypesPage from "@/pages/asset-types";
 import DashboardPage from "@/pages/dashboard";
 import LoginPage from "@/pages/login";
+import ModelsPage from "@/pages/models";
 import NotificationPage from "@/pages/notification";
+import OSPage from "@/pages/os"; 
 import RegisterPage from "@/pages/register";
 import SettingsPage from "@/pages/settings";
+import UsersPage from "@/pages/users";
 import { RouteObject } from "react-router-dom";
 
 export const ROUTES: RouteObject[] = [
@@ -24,25 +28,25 @@ export const ROUTES: RouteObject[] = [
                 element: <SettingsPage />
             },
             {
+                path: "settings/:section",
+                element: <SettingsPage />
+            },
+            {
                 path: "users",
-                element: <div>Users</div>
+                element: <UsersPage />
             },
             {
                 path: "/types/hardware",
-                element: <div>Hardware</div>
+                element: <AssetTypesPage />
             },
             {
                 path: "/types/models",
-                element: <div>Asset Models</div>
+                element: <ModelsPage />
             },
             {
                 path: "/types/os",
-                element: <div>OS</div>
+                element: <OSPage />
             },
-            {
-                path: "/types/os-versions",
-                element: <div>OS Versions</div>
-            }
         ]
     },
     {

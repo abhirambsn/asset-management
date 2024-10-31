@@ -18,7 +18,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "@/components/ui/card";
 import { useTenant } from "@/hooks/tenant-hook";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";

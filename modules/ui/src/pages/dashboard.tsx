@@ -1,6 +1,6 @@
-import AssetsDataTable from "@/components/assets-data-table";
-import DonutChart from "@/components/donut-chart";
-import StatsTable from "@/components/stats-table";
+import AssetsDataTable from "@/components/data-tables/assets";
+import DonutChart from "@/components/charts/donut-chart";
+import StatsTable from "@/components/data-tables/stats";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTenant } from "@/hooks/tenant-hook";
 import {
@@ -11,11 +11,14 @@ import {
   DONUT_CHART_DATA_SERVICE_OUTPUT_ASSET_OWNER,
 } from "@/utils/constants";
 import { useParams } from "react-router-dom";
-
+import { Button } from "@/components/ui/button";
+import { useModalStore } from "@/store/create-modal";
+import { Plus } from "lucide-react";
 
 const DashboardPage = () => {
   const params = useParams();
   const { tenant } = useTenant();
+  const { openModal } = useModalStore();
   console.log(params);
   return (
     <section className="grid grid-cols-3 gap-3">
@@ -54,8 +57,15 @@ const DashboardPage = () => {
         </CardContent>
       </Card>
       <Card className="col-span-3">
-        <CardHeader>
-          <h2 className="text-xl">My Assets</h2>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-xl">My Assets</CardTitle>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => openModal("asset")}
+          >
+            <Plus />
+          </Button>
         </CardHeader>
         <CardContent>
           <AssetsDataTable data={tenant.assets} />

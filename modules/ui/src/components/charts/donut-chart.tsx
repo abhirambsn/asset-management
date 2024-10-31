@@ -14,6 +14,7 @@ type DonutChartProps<T> = {
   config: ChartConfig;
   dataKey: string;
   nameKey: string;
+  label?: string;
 };
 
 const DonutChart = <T,>({
@@ -21,6 +22,7 @@ const DonutChart = <T,>({
   config,
   dataKey,
   nameKey,
+  label = "Items",
 }: DonutChartProps<T>) => {
   const aggregateData = useMemo(() => {
     return data.reduce((acc, item) => acc + (_.get(item, 'count') || 0), 0);
@@ -65,7 +67,7 @@ const DonutChart = <T,>({
                       y={(viewBox.cy || 0) + 24}
                       className="fill-muted-foreground"
                     >
-                      Total Assets
+                      Total {label}
                     </tspan>
                   </text>
                 );

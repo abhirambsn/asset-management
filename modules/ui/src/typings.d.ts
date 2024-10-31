@@ -21,7 +21,14 @@ type User = {
     email: string;
     roles: RoleList;
     password: string;
+    firstName?: string;
+    lastName?: string;
 };
+
+type OperatingSystem = {
+    id: string;
+    name: string;
+}
 
 type AssetType = {
     id: string;
@@ -64,7 +71,7 @@ type Tenant = {
     users: User[];
     assets: AssetList;
     assetTypes: AssetTypes;
-    osTypes: OsTypes;
+    osTypes: OperatingSystem[];
     assetModels: AssetModels;
     isDefault: boolean;
     owner: User;
@@ -95,4 +102,19 @@ type ModalState = {
     closeModal: () => void;
 }
 
-type ModalType = "asset" | "assetType" | "os" | "osVersion" | "user" | "workspace" | "";
+type ModalType = "asset" | "assetType" | "os" | "user" | "workspace" | "model" | "";
+
+type AppNotification = {
+    id: string;
+    message: string;
+    type: "success" | "error" | "info";
+    read: boolean;
+    timestamp: number;
+}
+
+type NotificationState = {
+    notifications: AppNotification[];
+    addNotification: (notification: AppNotification) => void;
+    removeNotification: (id: string) => void;
+    clearNotifications: () => void;
+}

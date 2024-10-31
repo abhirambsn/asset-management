@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from './ui/table'
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@/components/ui/table'
 
 type StatsTableProps = {
   tableData: TableData[]

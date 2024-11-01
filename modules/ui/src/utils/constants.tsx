@@ -494,3 +494,22 @@ export const SETTINGS_TABSBAR = [
   { id: "notifications", name: "Notifications", icon: Bell },
   { id: "appearance", name: "Appearance", icon: SwatchBook },
 ] as const;
+
+export const LANDING_NAVBAR = [
+  {
+    name: "Home",
+    url: '/landing',
+  },
+  {
+    name: "Features",
+    url: '/landing/features',
+  },
+  {
+    name: "Pricing",
+    url: '/landing/pricing',
+  },
+  {
+    name: "Contact",
+    url: '/landing/contact',
+  }
+]

@@ -5,7 +5,9 @@ const LandingPage = () => {
         document.title = "Mylo Asset Management"
     }, [])
   return (
-    <div>LandingPage</div>
+    <section>
+      <h1>Landing Page</h1>
+    </section>
   )
 }
 

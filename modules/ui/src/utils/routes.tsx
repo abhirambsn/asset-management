@@ -1,8 +1,12 @@
+import ContactPage from "@/pages/landing/contact";
+import FeaturesPage from "@/pages/landing/features";
+import LandingLayout from "@/components/landing/layout";
+import PricingPage from "@/pages/landing/pricing";
 import MainLayout from "@/components/main-layout";
 import AssetTypesPage from "@/pages/asset-types";
 import DashboardPage from "@/pages/dashboard";
 import NotFoundPage from "@/pages/error/not-found-404";
-import LandingPage from "@/pages/landing-page";
+import LandingPage from "@/pages/landing/home";
 import LoginPage from "@/pages/login";
 import ModelsPage from "@/pages/models";
 import OSPage from "@/pages/os"; 
@@ -66,8 +70,26 @@ export const ROUTES: RouteObject[] = [
     },
     {
         path: "/landing",
-        element: <LandingPage />,
+        element: <LandingLayout />,
         errorElement: <NotFoundPage />,
+        children: [
+            {
+                path: "",
+                element: <LandingPage />
+            },
+            {
+                path: "pricing",
+                element: <PricingPage />
+            },
+            {
+                path: "features",
+                element: <FeaturesPage />
+            },
+            {
+                path: "contact",
+                element: <ContactPage />
+            }
+        ]
     },
     {
         path: "*",

@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model AssetType {
+  id        String   @id  @map("_id")
+  name      String
+  models    AssetModel[]
+  assets    Asset[]
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model OsTypes {
+  id        String   @id  @map("_id")
+  name      String
+  assets    Asset[]
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model AssetModel {
+  typeId          String
+  type            AssetType @relation(fields: [typeId], references: [id])
+  id              String  @id @map("_id")
+  name            String
+  company         String
+  releaseYear     Int
+  specs           Json
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id])
+  assets          Asset[]
+}
+
+model Asset {
+  id         String   @id @default(uuid())  @map("_id")
+  name       String
+  typeId     String
+  type       AssetType @relation(fields: [typeId], references: [id])
+  osTypeId   String
+  osType     OsTypes @relation(fields: [osTypeId], references: [id])
+  osVersion  String
+  registrationDate DateTime
+  lastUpdated DateTime
+  modelId    String
+  model        AssetModel @relation(fields: [modelId], references: [id])
+  owner       String
+  class       AssetClass
+  value       Float
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model Workspace {
+  id         String   @id @default(uuid())  @map("_id")
+  name       String
+  owner      String
+  assets     Asset[]
+  tenantId   String
+  tenant     Tenant? @relation(fields: [tenantId], references: [id])
+  assetTypes  AssetType[]
+  osTypes     OsTypes[]
+  assetModels AssetModel[]
+}
+
+model Tenant {
+  id         String   @id @default(uuid())  @map("_id")
+  name       String
+  owner      String
+  workspaces Workspace[]
+  users      String[]
+}
+
+enum AssetClass {
+  CRITICAL
+  IMPORTANT
+  NORMAL
+  NOT_IMPORTANT
+}

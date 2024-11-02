@@ -107,4 +107,21 @@ export class ExtensionsService {
       orderBy,
     });
   }
+
+  async deleteAssetType(where: Prisma.AssetTypeWhereUniqueInput) {
+    return this.prisma.assetType.delete({
+      where,
+    });
+  }
+
+  async deleteAssetModel(where: Prisma.AssetModelWhereUniqueInput) {
+    return this.prisma.assetModel.delete({
+      where,
+    });
+  }
+  async deleteOsType(where: Prisma.OsTypesWhereUniqueInput) {
+    return this.prisma.osTypes.delete({
+      where,
+    });
+  }
 }

@@ -14,6 +14,19 @@ export class AssetsService {
     });
   }
 
+  async asset(
+    assetWhereUniqueInput: Prisma.AssetWhereUniqueInput,
+  ): Promise<Asset | null> {
+    return this.prisma.asset.findUnique({
+      where: assetWhereUniqueInput,
+      include: {
+        model: true,
+        osType: true,
+        type: true,
+      },
+    });
+  }
+
   async assets(params: {
     skip?: number;
     take?: number;
@@ -33,6 +46,12 @@ export class AssetsService {
         osType: true,
         type: true,
       },
+    });
+  }
+
+  async delete(where: Prisma.AssetWhereUniqueInput): Promise<Asset | null> {
+    return this.prisma.asset.delete({
+      where,
     });
   }
 }

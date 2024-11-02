@@ -10,10 +10,25 @@ import { AssetsService } from './service/assets/assets.service';
 import { AssetController } from './controller/asset/asset.controller';
 import { ExtensionsService } from './service/extensions/extensions.service';
 import { ExtensionsController } from './controller/extensions/extensions.controller';
+import { MetricsController } from './controller/metrics/metrics.controller';
 
 @Module({
   imports: [],
-  controllers: [AppController, TenantController, WorkspaceController, AssetController, ExtensionsController],
-  providers: [AppService, TenantService, WorkspaceService, PrismaService, AssetsService, ExtensionsService],
+  controllers: [
+    AppController,
+    TenantController,
+    WorkspaceController,
+    AssetController,
+    ExtensionsController,
+    MetricsController,
+  ],
+  providers: [
+    AppService,
+    TenantService,
+    WorkspaceService,
+    PrismaService,
+    AssetsService,
+    ExtensionsService,
+  ],
 })
 export class AppModule {}

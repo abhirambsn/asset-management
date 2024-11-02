@@ -1,4 +1,5 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { RegisterUserDto } from 'src/dto/RegisterUserDto';
 import { SignInDto } from 'src/dto/SignInDto';
 import { AuthService } from 'src/service/auth/auth.service';
@@ -7,9 +8,8 @@ import { AuthService } from 'src/service/auth/auth.service';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @HttpCode(HttpStatus.OK)
-  @Post('')
-  signIn(@Body() signInDto: SignInDto) {
+  @MessagePattern({ cmd: 'login' })
+  signIn(signInDto: SignInDto) {
     return this.authService.signIn(
       signInDto.tenantId,
       signInDto.username,
@@ -17,9 +17,8 @@ export class AuthController {
     );
   }
 
-  @HttpCode(HttpStatus.CREATED)
-  @Post('register')
-  register(@Body() registerUserDto: RegisterUserDto) {
+  @MessagePattern({ cmd: 'register' })
+  register(registerUserDto: RegisterUserDto) {
     return this.authService.register(registerUserDto);
   }
 }

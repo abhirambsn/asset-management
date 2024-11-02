@@ -1,16 +1,18 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { AssetClass } from '@prisma/client';
-import { CreateAssetDto } from 'src/dto/CreateAssetDto';
+import { MessagePayload } from 'src/dto/MessagePayload';
 import { AssetsService } from 'src/service/assets/assets.service';
 
 @Controller('asset')
 export class AssetController {
   constructor(private assetService: AssetsService) {}
 
-  @Post('')
-  async createAsset(@Body() createAssetDto: CreateAssetDto) {
+  @MessagePattern({ role: 'asset', cmd: 'create' })
+  async createAsset(data: MessagePayload) {
     let classType: AssetClass = AssetClass.NORMAL;
-    switch (createAssetDto.class) {
+    const createAssetBody = data.payload;
+    switch (createAssetBody.class) {
       case 'normal':
         classType = AssetClass.NORMAL;
         break;
@@ -25,7 +27,7 @@ export class AssetController {
         break;
     }
     const body = {
-      ...createAssetDto,
+      ...createAssetBody,
       class: classType,
       lastUpdated: new Date(),
       registrationDate: new Date(),
@@ -33,12 +35,29 @@ export class AssetController {
     return await this.assetService.create(body);
   }
 
-  @Get('')
-  async getAssets(@Query('workspaceId') workspaceId: string) {
+  @MessagePattern({ role: 'asset', cmd: 'get' })
+  async getAssets(data: MessagePayload) {
+    const workspaceId = data.payload.workspaceId;
     return await this.assetService.assets({
       where: {
         workspaceId,
       },
+    });
+  }
+
+  @MessagePattern({ role: 'asset', cmd: 'getById' })
+  async getAssetById(data: MessagePayload) {
+    const id = data.payload.id;
+    return await this.assetService.asset({
+      id,
+    });
+  }
+
+  @MessagePattern({ role: 'asset', cmd: 'delete' })
+  async deleteAsset(data: MessagePayload) {
+    const id = data.payload.id;
+    return await this.assetService.delete({
+      id,
     });
   }
 }

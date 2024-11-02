@@ -1,20 +1,22 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { CreateTenantDto } from 'src/dto/CreateTenantDto';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
+import { MessagePayload } from 'src/dto/MessagePayload';
 import { TenantService } from 'src/service/tenant/tenant.service';
 
 @Controller('tenant')
 export class TenantController {
   constructor(private tenantService: TenantService) {}
 
-  @Get(':id')
-  async tenant(@Param('id') id: string) {
+  @MessagePattern({ cmd: 'tenant_get' })
+  async tenant(data: MessagePayload) {
+    console.log(data);
     return this.tenantService.tenant({
-      id,
+      id: data.payload.id,
     });
   }
 
-  @Post('')
-  async createTenant(@Body() data: CreateTenantDto) {
-    return this.tenantService.create(data);
+  @MessagePattern({ cmd: 'tenant_create' })
+  async createTenant(data: MessagePayload) {
+    return this.tenantService.create(data.payload);
   }
 }

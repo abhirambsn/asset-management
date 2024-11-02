@@ -1,38 +1,51 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { CreateAssetTypeDto } from 'src/dto/CreateAssetTypeDto';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
+import { MessagePayload } from 'src/dto/MessagePayload';
 import { ExtensionsService } from 'src/service/extensions/extensions.service';
 
 @Controller('extensions')
 export class ExtensionsController {
   constructor(private extensionsService: ExtensionsService) {}
 
-  @Post('asset-type')
-  async createAssetType(@Body() data: CreateAssetTypeDto) {
-    return this.extensionsService.createAssetType(data);
+  @MessagePattern({ cmd: 'create', role: 'extensions' })
+  async create(data: MessagePayload) {
+    switch (data?.type) {
+      case 'asset-type':
+        return this.extensionsService.createAssetType(data.payload);
+      case 'os-type':
+        return this.extensionsService.createOsType(data.payload);
+      case 'asset-model':
+        return this.extensionsService.createAssetModel(data.payload);
+      default:
+        return { error: 'Invalid type' };
+    }
   }
 
-  @Post('os-type')
-  async createOsType(@Body() data) {
-    return this.extensionsService.createOsType(data);
+  @MessagePattern({ cmd: 'get', role: 'extensions' })
+  async get(data: MessagePayload) {
+    switch (data.type) {
+      case 'asset-type':
+        return this.extensionsService.assetTypes(data.payload);
+      case 'os-type':
+        return this.extensionsService.osTypes(data.payload);
+      case 'asset-model':
+        return this.extensionsService.assetModels(data.payload);
+      default:
+        return { error: 'Invalid type' };
+    }
   }
 
-  @Post('asset-model')
-  async createAssetModel(@Body() data) {
-    return this.extensionsService.createAssetModel(data);
-  }
-
-  @Get('asset-types')
-  async assetTypes(params) {
-    return this.extensionsService.assetTypes(params);
-  }
-
-  @Get('asset-models')
-  async assetModels(params) {
-    return this.extensionsService.assetModels(params);
-  }
-
-  @Get('os-types')
-  async osTypes(params) {
-    return this.extensionsService.osTypes(params);
+  @MessagePattern({ cmd: 'delete', role: 'extensions' })
+  async delete(data: MessagePayload) {
+    switch (data.type) {
+      case 'asset-type':
+        return this.extensionsService.deleteAssetType(data.payload);
+      case 'os-type':
+        return this.extensionsService.deleteOsType(data.payload);
+      case 'asset-model':
+        return this.extensionsService.deleteAssetModel(data.payload);
+      default:
+        return { error: 'Invalid type' };
+    }
   }
 }

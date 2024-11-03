@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth.guard';
@@ -31,7 +32,7 @@ export class AssetController {
   @HttpCode(HttpStatus.OK)
   @Get('')
   @Roles(['ADMIN', 'READ'])
-  async getAssets(workspaceId: string) {
+  async getAssets(@Query('workspaceId') workspaceId: string) {
     return await this.assetService.getAssets(workspaceId);
   }
 

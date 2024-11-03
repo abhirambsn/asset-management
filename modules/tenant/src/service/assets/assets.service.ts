@@ -11,6 +11,11 @@ export class AssetsService {
       data: {
         ...data,
       },
+      include: {
+        model: true,
+        osType: true,
+        type: true,
+      },
     });
   }
 

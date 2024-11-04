@@ -34,4 +34,13 @@ export class AuthService {
     const response = await lastValueFrom(response$);
     return response;
   }
+
+  async getTenantUsers(tenantId: string) {
+    const pattern = { cmd: 'users', role: 'tenant' };
+    const payload = tenantId;
+
+    const response$ = this.client.send(pattern, payload).pipe(take(1));
+    const users = await lastValueFrom(response$);
+    return users;
+  }
 }

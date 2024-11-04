@@ -43,4 +43,25 @@ export class UserService {
       return Promise.reject("Error fetching user");
     }
   }
+
+  async getTenantUsers(token: string, tenantId: string): Promise<User[]> {
+    const endpoint = `/auth/tenant/${tenantId}`;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    try {
+      const users = await this.endpointClient.sendRequest<User[]>(
+        endpoint,
+        "GET",
+        {},
+        {},
+        headers
+      );
+      return users;
+    } catch (err) {
+      console.log("error fetching tenant users", err);
+      return Promise.reject("Error fetching tenant users");
+    }
+  }
 }

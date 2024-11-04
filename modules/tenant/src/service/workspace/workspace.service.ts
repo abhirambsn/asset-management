@@ -24,7 +24,13 @@ export class WorkspaceService {
     return this.prisma.workspace.findUnique({
       where: workspaceWhereUniqueInput,
       include: {
-        assets: true,
+        assets: {
+          include: {
+            osType: true,
+            model: true,
+            type: true,
+          },
+        },
         assetModels: true,
         osTypes: true,
         assetTypes: true,
@@ -47,7 +53,13 @@ export class WorkspaceService {
       where,
       orderBy,
       include: {
-        assets: true,
+        assets: {
+          include: {
+            osType: true,
+            model: true,
+            type: true,
+          },
+        },
         assetModels: true,
         osTypes: true,
         assetTypes: true,

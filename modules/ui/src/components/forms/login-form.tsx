@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { useEndpoint } from "@/hooks/endpoint-hook";
 import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/store/user";
 
 const LoginForm = () => {
   const { tenant } = useTenant();
@@ -32,6 +33,7 @@ const LoginForm = () => {
   const { userService } = useEndpoint();
   const { authenticate } = useAuthStore();
   const { toast } = useToast();
+  const { setUser } = useUser();
 
   useEffect(() => {
     if (!tenant || tenant.name === "main") {
@@ -60,6 +62,12 @@ const LoginForm = () => {
     try {
       const token = await userService.login(payload);
       authenticate(token, Date.now() + 1000 * 60 * 60);
+      toast({
+        title: "Success",
+        description: "Logged in successfully",
+      });
+      const user = await userService.getUser(token);
+      setUser(user);
       navigate("/");
     } catch (err) {
       console.log("Error logging in", err);

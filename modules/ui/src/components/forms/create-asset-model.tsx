@@ -25,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useTenant } from "@/hooks/tenant-hook";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -42,20 +41,25 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { useWorkspace } from "@/store/workspace";
 
 const CreateAssetModelModal = () => {
   const { isOpen, closeModal, type } = useModalStore();
   const [specName, setSpecName] = useState("");
   const [specValue, setSpecValue] = useState("");
-  const { tenant } = useTenant();
+  const { currentWorkspace } = useWorkspace();
 
   const formSchema = z.object({
     id: z.string({ required_error: "ID is required" }),
     type: z.string({ required_error: "Type is required" }),
-    name: z.string({ required_error: "Model is required" }).min(2, "Type should contain minimum of 2 characters"),
-    company: z.string({ required_error: "Company is required" }).min(2, "Type should contain minimum of 2 characters"),
+    name: z
+      .string({ required_error: "Model is required" })
+      .min(2, "Type should contain minimum of 2 characters"),
+    company: z
+      .string({ required_error: "Company is required" })
+      .min(2, "Type should contain minimum of 2 characters"),
     releaseDate: z.date({ required_error: "Release Date is required" }),
-    specs: z.record(z.string(), z.string())
+    specs: z.record(z.string(), z.string()),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -96,7 +100,7 @@ const CreateAssetModelModal = () => {
   ) => {
     if (!specName.length || !specValue.length) return;
     field.onChange({
-      ...field.value as Record<string, string>,
+      ...(field.value as Record<string, string>),
       [specName]: specValue,
     });
     setSpecName("");
@@ -110,7 +114,7 @@ const CreateAssetModelModal = () => {
         Object.entries(form.getValues("specs")).filter(([k]) => k !== key)
       )
     );
-  }
+  };
 
   return (
     <Dialog open={isOpen && type === "model"} onOpenChange={closeForm}>
@@ -155,11 +159,12 @@ const CreateAssetModelModal = () => {
                       </FormControl>
 
                       <SelectContent>
-                        {tenant.assetTypes.map((assetType) => (
-                          <SelectItem key={assetType.id} value={assetType.id}>
-                            {assetType.name}
-                          </SelectItem>
-                        ))}
+                        {currentWorkspace &&
+                          currentWorkspace.assetTypes.map((assetType) => (
+                            <SelectItem key={assetType.id} value={assetType.id}>
+                              {assetType.name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

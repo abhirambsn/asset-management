@@ -1,28 +1,22 @@
 /* eslint-disable react-refresh/only-export-components */
-import { TenantService } from "@/service/TenantService";
+import { useEndpoint } from "@/hooks/endpoint-hook";
 import { useAuthStore } from "@/store/auth-store";
+import { useLoading } from "@/store/loading";
+import { useTenantStore } from "@/store/tenant";
+import { useTenantUsers } from "@/store/tenant-users";
+import { useUser } from "@/store/user";
 import { useWorkspace } from "@/store/workspace";
-import { TENANTS } from "@/utils/constants";
 import { getSubdomain } from "@/utils/helper";
-import { useQuery } from "@tanstack/react-query";
-import { createContext } from "react";
+import { createContext, useCallback, useEffect } from "react";
 
 type TenantProviderState = {
-  tenant: Tenant | TenantMetadata;
+  tenant: Tenant;
   subdomain: string;
-  invalidateTenant: () => void;
-  workspaces: WorkspaceList;
-  PERSONAL_WORKSPACE: Workspace;
-  invalidateWorkspace: () => void;
 };
 
 const initialState: TenantProviderState = {
-  tenant: TENANTS[0],
-  invalidateTenant: () => {},
+  tenant: {} as Tenant,
   subdomain: "",
-  workspaces: [],
-  PERSONAL_WORKSPACE: {} as Workspace,
-  invalidateWorkspace: () => {},
 };
 
 export const TenantProviderContext = createContext(initialState);
@@ -33,95 +27,112 @@ export const TenantProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const tenantService = new TenantService();
+  const { tenantService, userService } = useEndpoint();
   const subdomain = getSubdomain(window.location.hostname);
   const authState = useAuthStore();
-  const { setWorkspaces } = useWorkspace();
-  let isMeta = true;
-  let PERSONAL_WORKSPACE: Workspace = {} as Workspace;
+  const { setWorkspaces, setPersonalWorkspace, setCurrentWorkspace } =
+    useWorkspace();
+  const { user } = useUser();
+  const { setTenant, tenant } = useTenantStore();
+  const { setUsers } = useTenantUsers();
+  const { setLoading } = useLoading();
 
-  console.log("Subdomain", subdomain);
-
-  let tenant: Tenant | TenantMetadata;
-  let workspaces: WorkspaceList = [];
-
-  const fetchTenant = async () => {
+  const fetchTenant = useCallback(async () => {
     const tenant = await tenantService.getTenant(subdomain, authState.token);
     console.log("Fetching tenant from api");
     return tenant;
-  };
+  }, [subdomain, tenantService, authState.token]);
 
-  const fetchTenantMetadata = async () => {
+  const fetchTenantMetadata = useCallback(async () => {
     const tenantMeta = await tenantService.getTenantMetadata(subdomain);
     console.log("Fetching tenant metadata from api");
     return tenantMeta;
-  };
+  }, [subdomain, tenantService]);
 
-  const getTenant = async () => {
+  const getTenant = useCallback(async () => {
     if (authState.isAuthenticated) {
-      isMeta = true;
-      const tenantData = await fetchTenant();
-      workspaces = tenantData.workspaces;
-      PERSONAL_WORKSPACE = workspaces.find(
-        (w) => w.id === "personal"
-      ) as Workspace;
-      return tenantData;
+      return await fetchTenant();
     } else {
-      isMeta = false;
-      return await fetchTenantMetadata();
+      const tenantMeta = await fetchTenantMetadata();
+      return {
+        ...tenantMeta,
+        workspaces: [] as WorkspaceList,
+        users: [] as User[],
+      } as Tenant;
     }
-  };
+  }, [fetchTenant, fetchTenantMetadata, authState.isAuthenticated]);
 
-  const fetchworkspacesByTenant = async () => {
-    if (!tenant || !authState.isAuthenticated) return;
+  const fetchworkspacesByTenant = useCallback(async () => {
+    if (!authState.isAuthenticated) return [];
     const workspaces = await tenantService.getWorkspacesByTenant(
       subdomain,
       authState.token
     );
-    setWorkspaces(workspaces);
     return workspaces;
-  };
+  }, [authState.isAuthenticated, subdomain, authState.token, tenantService]);
 
-  const { data, refetch } = useQuery({
-    queryKey: ["tenant", subdomain],
-    queryFn: getTenant,
-    staleTime: 1000 * 60 * 60,
-  });
+  const fetchUsersByTenant = useCallback(async () => {
+    console.log(user?.roles);
+    if (!authState.isAuthenticated || (user && !user?.roles.includes("ADMIN")))
+      return [];
+    console.log("Fetching tenant users from API of tenant", subdomain);
+    const users = await userService.getTenantUsers(authState.token, subdomain);
+    console.log("Fetching tenant users from API", users);
+    return users;
+  }, [
+    authState.isAuthenticated,
+    user,
+    userService,
+    authState.token,
+    subdomain,
+  ]);
 
-  const { refetch: refetchWorkspaces } = useQuery({
-    queryKey: ["workspaces", subdomain],
-    queryFn: fetchworkspacesByTenant,
-    staleTime: 1000 * 60 * 60,
-  });
+  useEffect(() => {
+    if (!authState.isAuthenticated) return;
+    setLoading(true);
+    (async () => {
+      console.log("Logged in as User", user);
+      console.log("Fetching Tenant...");
+      const tenant = await getTenant();
+      console.log("Tenant", tenant);
+      console.log("Fetching Tenant Users...");
+      const tenantUsers = await fetchUsersByTenant();
+      console.log("Tenant Users", tenantUsers);
+      console.log("Fetching Tenant Workspaces...");
+      const workspaces = await fetchworkspacesByTenant();
+      console.log("Tenant Workspaces", workspaces);
+      const personalWorkspace =
+        workspaces.find((w) => w.name === `personal-${tenant.id}`) ||
+        ({} as Workspace);
 
-  if (!data) {
-    tenant = TENANTS[0];
-  } else {
-    console.log("FETCHED TENANT", data);
-    tenant = data;
-  }
+      console.log("Personal Workspace", personalWorkspace);
 
-  const invalidateTenant = async () => {
-    if (isMeta) return;
-    console.log("Invalidating tenant");
-    await refetch();
-  };
-
-  const invalidateWorkspace = async () => {
-    if (isMeta) return;
-    console.log("Invalidating workspace");
-    await refetchWorkspaces();
-  };
+      setPersonalWorkspace(personalWorkspace);
+      setCurrentWorkspace(personalWorkspace);
+      setWorkspaces(workspaces);
+      setUsers(tenantUsers);
+      setTenant(tenant);
+      setLoading(false);
+    })();
+  }, [
+    getTenant,
+    setTenant,
+    fetchUsersByTenant,
+    fetchworkspacesByTenant,
+    setUsers,
+    setWorkspaces,
+    setPersonalWorkspace,
+    setCurrentWorkspace,
+    setLoading,
+    authState.isAuthenticated,
+    user,
+  ]);
 
   return (
     <TenantProviderContext.Provider
       value={{
         tenant,
         subdomain,
-        invalidateTenant,
-        invalidateWorkspace,
-        workspaces,
-        PERSONAL_WORKSPACE,
       }}
       {...props}
     >

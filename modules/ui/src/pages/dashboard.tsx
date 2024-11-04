@@ -15,14 +15,24 @@ import { Button } from "@/components/ui/button";
 import { useModalStore } from "@/store/create-modal";
 import { Plus } from "lucide-react";
 import { useWorkspace } from "@/store/workspace";
+import { useEffect } from "react";
 
 const DashboardPage = () => {
   const params = useParams();
   const { openModal } = useModalStore();
-  const { currentWorkspace } = useWorkspace();
+  const { currentWorkspace, setCurrentWorkspace, workspaces } = useWorkspace();
 
-  console.log("Params", params);
-  console.log("Current Workspace", currentWorkspace);
+  useEffect(() => {
+    if (!params.workspaceId) return;
+    console.log("Workspace ID", params.workspaceId);
+    const workspace = workspaces.find(
+      (workspace) => workspace.id === params.workspaceId
+    );
+    if (!workspace) {
+      throw new Error("Workspace not found");
+    }
+    setCurrentWorkspace(workspace);
+  }, [params, setCurrentWorkspace, workspaces]);
 
   return (
     <section className="grid grid-cols-3 gap-3">
@@ -72,7 +82,9 @@ const DashboardPage = () => {
           </Button>
         </CardHeader>
         <CardContent>
-          <AssetsDataTable data={currentWorkspace?.assets} />
+          <AssetsDataTable
+            data={currentWorkspace ? currentWorkspace.assets : []}
+          />
         </CardContent>
       </Card>
     </section>

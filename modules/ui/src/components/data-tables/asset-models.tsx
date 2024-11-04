@@ -14,7 +14,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, DeleteIcon, MoreHorizontal, ViewIcon } from "lucide-react";
+import {
+  ChevronDown,
+  DeleteIcon,
+  MoreHorizontal,
+  ViewIcon,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -36,7 +41,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export const columns: ColumnDef<AssetModel>[] = [
   {
@@ -78,48 +90,46 @@ export const columns: ColumnDef<AssetModel>[] = [
     accessorKey: "specs",
     header: "Specs",
     cell: ({ row }) => {
-        return (
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant='outline'>
-                        <ViewIcon className='h-4 w-4' />
-                    </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Specs for {row.getValue('name')}</DialogTitle>
-                        <DialogDescription>
-                            Displaying additional Specification for {row.getValue('name')}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Spec Name</TableHead>
-                                <TableHead>Value</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {Object.entries(row.getValue('specs') as Record<string, string>).map(([key, value]) => (
-                                <TableRow key={key}>
-                                    <TableHead>{key}</TableHead>
-                                    <TableCell>{value}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </DialogContent>
-            </Dialog>
-        )
-    }
+      return (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">
+              <ViewIcon className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Specs for {row.getValue("name")}</DialogTitle>
+              <DialogDescription>
+                Displaying additional Specification for {row.getValue("name")}
+              </DialogDescription>
+            </DialogHeader>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Spec Name</TableHead>
+                  <TableHead>Value</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Object.entries(
+                  row.getValue("specs") as Record<string, string>
+                ).map(([key, value]) => (
+                  <TableRow key={key}>
+                    <TableHead>{key}</TableHead>
+                    <TableCell>{value}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </DialogContent>
+        </Dialog>
+      );
+    },
   },
   {
-    accessorKey: "releaseDate",
-    header: "Release Date",
-    cell: ({ row }) => {
-        const date = new Date(row.original.releaseDate);
-        return date.toLocaleDateString();
-    }
+    accessorKey: "releaseYear",
+    header: "Release Year",
   },
   {
     id: "actions",

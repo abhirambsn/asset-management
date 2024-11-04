@@ -6,9 +6,11 @@ export const useWorkspace = create(
     (set) => ({
       currentWorkspace: null,
       workspaces: [],
+      personalWorkspace: null,
       setCurrentWorkspace: (workspace) => set({ currentWorkspace: workspace }),
       setWorkspaces: (workspaces) => set({ workspaces }),
-      clearState: () => set({ currentWorkspace: null, workspaces: [] }),
+      clearState: () => set({ currentWorkspace: null, workspaces: [], personalWorkspace: null }),
+      setPersonalWorkspace: (workspace) => set({ personalWorkspace: workspace }),
     }),
     {
       name: "workspace",

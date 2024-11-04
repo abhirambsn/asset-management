@@ -15,7 +15,7 @@ export class TenantService {
         users: [data.owner],
         workspaces: {
           create: {
-            id: 'personal',
+            id: `personal-${kebabCase(data.name)}`,
             name: 'Personal Workspace',
             owner: data.owner,
           },

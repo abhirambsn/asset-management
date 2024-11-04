@@ -93,11 +93,13 @@ export const columns: ColumnDef<Asset>[] = [
     cell: ({ row }) => <div>{row.getValue("owner")}</div>,
   },
   {
-    accessorKey: "os",
+    accessorKey: "osType",
     header: "OS",
     cell: ({ row }) => (
-      <Link to={`/os/${row.getValue("os")}`}>
-        <div className="hover:underline">{row.getValue("os")}</div>
+      <Link to={`/os/${(row.getValue("osType") as OperatingSystem).id}`}>
+        <div className="hover:underline">
+          {(row.getValue("osType") as OperatingSystem).name}
+        </div>
       </Link>
     ),
   },
@@ -109,8 +111,8 @@ export const columns: ColumnDef<Asset>[] = [
     accessorKey: "model",
     header: "Model",
     cell: ({ row }) => (
-      <Link to={`/model/${row.getValue("model")}`}>
-        <div className="hover:underline">{row.getValue("model")}</div>
+      <Link to={`/model/${(row.getValue("model") as AssetModel).id}`}>
+        <div className="hover:underline">{(row.getValue("model") as AssetModel).name}</div>
       </Link>
     ),
   },

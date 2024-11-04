@@ -25,17 +25,24 @@ import { useWorkspace } from "@/store/workspace";
 import { Link, useNavigate } from "react-router-dom";
 import { useTenant } from "@/hooks/tenant-hook";
 import { Separator } from "./ui/separator";
-import useUser from "@/hooks/user-hook";
 import { useBreadcrumbNav } from "@/store/breadcrumb-nav";
+import { useAuthStore } from "@/store/auth-store";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useUser } from "@/store/user";
 
 const DashboardSidebar = () => {
   const navigate = useNavigate();
 
   const { tenant } = useTenant();
-  const user = useUser();
+  const { user } = useUser();
 
   const { currentWorkspace, setCurrentWorkspace, workspaces } = useWorkspace();
   const { addToNavStack, removeFromNavStack } = useBreadcrumbNav();
+  const { logout } = useAuthStore();
+  const queryClient = useQueryClient();
+
+  const [workspacesQuota, setWorkspacesQuota] = useState(0);
 
   const handleChangeWorkspace = (workspaceId: string) => {
     const workspace = workspaces.find(
@@ -52,7 +59,18 @@ const DashboardSidebar = () => {
     }
   };
 
-  const isAdmin = true;
+  useEffect(() => {
+    setWorkspacesQuota(tenant.workspaces.length);
+  }, [tenant]);
+
+  const logoutUser = () => {
+    console.log("Logging out...");
+    logout();
+    queryClient.removeQueries();
+    navigate("/login");
+  };
+
+  const isAdmin = (user && user.roles.includes("ADMIN")) || false;
 
   return (
     <Sidebar collapsible="icon">
@@ -158,13 +176,15 @@ const DashboardSidebar = () => {
       <SidebarFooter className="mb-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton>Workspace Quota: 1/4</SidebarMenuButton>
+            <SidebarMenuButton>
+              Workspace Quota: {workspacesQuota}/4
+            </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> {user?.username}
+                  <User2 /> {user?.firstName} {user?.lastName}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -178,10 +198,7 @@ const DashboardSidebar = () => {
                     <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => console.log("Signing Out...")}
-                  className="text-red-500"
-                >
+                <DropdownMenuItem onClick={logoutUser} className="text-red-500">
                   <LogOutIcon />
                   <span>Sign Out</span>
                 </DropdownMenuItem>

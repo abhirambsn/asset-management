@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,11 +13,11 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -26,8 +26,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -35,10 +35,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Link } from "react-router-dom"
-import { Badge } from "@/components/ui/badge"
-
+} from "@/components/ui/table";
+import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Asset>[] = [
   {
@@ -65,18 +64,18 @@ export const columns: ColumnDef<Asset>[] = [
   },
   {
     accessorKey: "id",
-    header: () => (<></>),
-    cell: () => (<></>),
+    header: () => <></>,
+    cell: () => <></>,
     enableHiding: false,
-    },
+  },
   {
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => (
-        <Link to={`/asset/${row.getValue('id')}`}>
-            <div className="hover:underline">{row.getValue('name')}</div>
-        </Link>
-    )
+      <Link to={`/asset/${row.getValue("id")}`}>
+        <div className="hover:underline">{row.getValue("name")}</div>
+      </Link>
+    ),
   },
   {
     accessorKey: "owner",
@@ -89,7 +88,7 @@ export const columns: ColumnDef<Asset>[] = [
           Owner
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => <div>{row.getValue("owner")}</div>,
   },
@@ -97,10 +96,10 @@ export const columns: ColumnDef<Asset>[] = [
     accessorKey: "os",
     header: "OS",
     cell: ({ row }) => (
-        <Link to={`/os/${row.getValue('os')}`}>
-            <div className="hover:underline">{row.getValue('os')}</div>
-        </Link>
-    )
+      <Link to={`/os/${row.getValue("os")}`}>
+        <div className="hover:underline">{row.getValue("os")}</div>
+      </Link>
+    ),
   },
   {
     accessorKey: "osVersion",
@@ -110,10 +109,10 @@ export const columns: ColumnDef<Asset>[] = [
     accessorKey: "model",
     header: "Model",
     cell: ({ row }) => (
-        <Link to={`/model/${row.getValue('model')}`}>
-            <div className="hover:underline">{row.getValue('model')}</div>
-        </Link>
-    )
+      <Link to={`/model/${row.getValue("model")}`}>
+        <div className="hover:underline">{row.getValue("model")}</div>
+      </Link>
+    ),
   },
   {
     accessorKey: "class",
@@ -126,15 +125,15 @@ export const columns: ColumnDef<Asset>[] = [
     accessorKey: "value",
     header: () => <div className="text-right">Asset Value</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("value"))
+      const amount = parseFloat(row.getValue("value"));
 
       // Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
-      }).format(amount)
+      }).format(amount);
 
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-right font-medium">{formatted}</div>;
     },
   },
   {
@@ -148,9 +147,13 @@ export const columns: ColumnDef<Asset>[] = [
           Registration Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
-    cell: ({ row }) => <div className="ml-4">{(row.getValue("registrationDate") as Date).toLocaleDateString()}</div>,
+    cell: ({ row }) => (
+      <div className="ml-4">
+        {new Date(row.getValue("registrationDate")).toLocaleDateString()}
+      </div>
+    ),
   },
   {
     accessorKey: "lastUpdated",
@@ -163,15 +166,19 @@ export const columns: ColumnDef<Asset>[] = [
           Last Updated
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
-    cell: ({ row }) => <div className="ml-4">{(row.getValue("registrationDate") as Date).toLocaleDateString()}</div>,
+    cell: ({ row }) => (
+      <div className="ml-4">
+        {new Date(row.getValue("lastUpdated")).toLocaleDateString()}
+      </div>
+    ),
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const asset = row.original
+      const asset = row.original;
 
       return (
         <DropdownMenu>
@@ -192,25 +199,23 @@ export const columns: ColumnDef<Asset>[] = [
             <DropdownMenuItem>View Asset Details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];
 
 type AssetDataTableProps<TValue> = {
-    data: TValue[]
-}
+  data: TValue[];
+};
 
-export default function AssetDataTable({
-    data
-}: AssetDataTableProps<Asset>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+export default function AssetDataTable({ data }: AssetDataTableProps<Asset>) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
+  );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
@@ -229,7 +234,7 @@ export default function AssetDataTable({
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   return (
     <div className="w-full">
@@ -264,7 +269,7 @@ export default function AssetDataTable({
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -284,7 +289,7 @@ export default function AssetDataTable({
                             header.getContext()
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -344,5 +349,5 @@ export default function AssetDataTable({
         </div>
       </div>
     </div>
-  )
+  );
 }

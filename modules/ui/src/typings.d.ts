@@ -2,13 +2,22 @@ type Workspace = {
     id: string;
     name: string;
     avatar?: string;
+    assets: AssetList;
+    assetTypes: AssetTypes;
+    osTypes: OperatingSystem[];
+    assetModels: AssetModels;
+    owner: string;
+    tenantId: string;
 }
 
 type WorkspaceList = Workspace[];
 
-type CurrentWorkspaceState = {
+type WorkspaceState = {
     currentWorkspace: Workspace | null;
+    workspaces: WorkspaceList;
     setCurrentWorkspace: (workspace: Workspace) => void;
+    setWorkspaces: (workspaces: WorkspaceList) => void;
+    clearState: () => void;
 }
 
 type Role = "ADMIN" | "READ" | "WRITE";
@@ -69,12 +78,13 @@ type Tenant = {
     name: string;
     subdomain: string;
     users: User[];
-    assets: AssetList;
-    assetTypes: AssetTypes;
-    osTypes: OperatingSystem[];
-    assetModels: AssetModels;
-    isDefault: boolean;
+    workspaces: WorkspaceList;
     owner: User;
+}
+
+type TenantMetadata = {
+    id: string;
+    name: string;
 }
 
 type TenantList = Tenant[];
@@ -117,4 +127,22 @@ type NotificationState = {
     addNotification: (notification: AppNotification) => void;
     removeNotification: (id: string) => void;
     clearNotifications: () => void;
+}
+
+type AuthState = {
+    isAuthenticated: boolean;
+    token: string;
+    expiresAt: number;
+    authenticate: (token: string, expiresAt: number) => void;
+    logout: () => void;
+}
+
+type AuthResponse = {
+    access_token: string;
+}
+
+type LoginPayload = {
+    username: string;
+    password: string;
+    tenantId: string;
 }

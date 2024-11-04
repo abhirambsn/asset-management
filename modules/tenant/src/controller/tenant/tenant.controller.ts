@@ -7,16 +7,20 @@ import { TenantService } from 'src/service/tenant/tenant.service';
 export class TenantController {
   constructor(private tenantService: TenantService) {}
 
-  @MessagePattern({ cmd: 'tenant_get' })
+  @MessagePattern({ cmd: 'get', role: 'tenant' })
   async tenant(data: MessagePayload) {
-    console.log(data);
     return this.tenantService.tenant({
       id: data.payload.id,
     });
   }
 
-  @MessagePattern({ cmd: 'tenant_create' })
+  @MessagePattern({ cmd: 'create', role: 'tenant' })
   async createTenant(data: MessagePayload) {
     return this.tenantService.create(data.payload);
+  }
+
+  @MessagePattern({ cmd: 'meta', role: 'tenant' })
+  async getTenantMetadata(data: MessagePayload) {
+    return this.tenantService.tenantMeta(data.payload);
   }
 }

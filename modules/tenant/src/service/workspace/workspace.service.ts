@@ -46,6 +46,12 @@ export class WorkspaceService {
       cursor,
       where,
       orderBy,
+      include: {
+        assets: true,
+        assetModels: true,
+        osTypes: true,
+        assetTypes: true,
+      },
     });
   }
 

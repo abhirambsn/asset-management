@@ -13,6 +13,7 @@ import {
 import { REQUEST } from '@nestjs/core';
 import { AuthGuard } from 'src/auth.guard';
 import { CreateTenantDto } from 'src/dto/tenant/CreateTenantDto';
+import { Public } from 'src/public.decorator';
 import { Roles } from 'src/roles.decorator';
 import { RolesGuard } from 'src/roles.guard';
 import { TenantService } from 'src/service/tenant/tenant.service';
@@ -46,5 +47,11 @@ export class TenantController {
   ) {
     console.log('updateTenant', id, updateTenantDto);
     return { id, ...updateTenantDto };
+  }
+
+  @Get(':id/meta')
+  @Public()
+  async getTenantMeta(@Param('id') id: string) {
+    return this.tenantService.getMeta(id);
   }
 }

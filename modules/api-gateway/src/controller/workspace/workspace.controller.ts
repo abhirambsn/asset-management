@@ -47,4 +47,15 @@ export class WorkspaceController {
 
     return workspace;
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('tenant/:tenantId')
+  @Roles(['ADMIN', 'READ', 'WRITE'])
+  async getWorkspacesByTenant(@Param('tenantId') tenantId: string) {
+    if (tenantId !== this.request?.user.tenant) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
+    return this.workspaceService.getWorkspacesByTenant(tenantId);
+  }
 }

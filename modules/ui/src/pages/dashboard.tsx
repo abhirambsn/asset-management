@@ -2,7 +2,7 @@ import AssetsDataTable from "@/components/data-tables/assets";
 import DonutChart from "@/components/charts/donut-chart";
 import StatsTable from "@/components/data-tables/stats";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTenant } from "@/hooks/tenant-hook";
+// import { useTenant } from "@/hooks/tenant-hook";
 import {
   DATA_SERVICE_STATS,
   DONUT_CHART_ASSET_CLASS_CONFIG,
@@ -14,12 +14,16 @@ import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useModalStore } from "@/store/create-modal";
 import { Plus } from "lucide-react";
+import { useWorkspace } from "@/store/workspace";
 
 const DashboardPage = () => {
   const params = useParams();
-  const { tenant } = useTenant();
   const { openModal } = useModalStore();
-  console.log(params);
+  const { currentWorkspace } = useWorkspace();
+
+  console.log("Params", params);
+  console.log("Current Workspace", currentWorkspace);
+
   return (
     <section className="grid grid-cols-3 gap-3">
       <Card className="bg-sidebar p-1">
@@ -68,7 +72,7 @@ const DashboardPage = () => {
           </Button>
         </CardHeader>
         <CardContent>
-          <AssetsDataTable data={tenant.assets} />
+          <AssetsDataTable data={currentWorkspace?.assets} />
         </CardContent>
       </Card>
     </section>

@@ -21,9 +21,7 @@ import {
 } from "./ui/dropdown-menu";
 import { ChevronUp, CogIcon, LogOutIcon, Plus, User2 } from "lucide-react";
 import { getAvatarUrl } from "@/utils/helper";
-import { useQuery } from "@tanstack/react-query";
-import { useEndpoint } from "@/hooks/endpoint-hook";
-import { useCurrentWorkspace } from "@/store/workspace";
+import { useWorkspace } from "@/store/workspace";
 import { Link, useNavigate } from "react-router-dom";
 import { useTenant } from "@/hooks/tenant-hook";
 import { Separator } from "./ui/separator";
@@ -33,29 +31,14 @@ import { useBreadcrumbNav } from "@/store/breadcrumb-nav";
 const DashboardSidebar = () => {
   const navigate = useNavigate();
 
-  const { workspaceService } = useEndpoint();
   const { tenant } = useTenant();
-  const currentUser = "james.corezo";
   const user = useUser();
 
-  const fetchworkspacesByUser = async () => {
-    const workspaces = await workspaceService.getWorkspaceByTenantUser(
-      tenant.id,
-      currentUser
-    );
-    return workspaces;
-  };
-
-  const workspaces = useQuery({
-    queryKey: ["workspaces"],
-    queryFn: fetchworkspacesByUser,
-    staleTime: 1000 * 60 * 60,
-  });
-  const { currentWorkspace, setCurrentWorkspace } = useCurrentWorkspace();
+  const { currentWorkspace, setCurrentWorkspace, workspaces } = useWorkspace();
   const { addToNavStack, removeFromNavStack } = useBreadcrumbNav();
 
   const handleChangeWorkspace = (workspaceId: string) => {
-    const workspace = workspaces.data?.find(
+    const workspace = workspaces.find(
       (workspace) => workspace.id === workspaceId
     );
     if (workspace) {
@@ -98,7 +81,7 @@ const DashboardSidebar = () => {
               <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
                 <DropdownMenuLabel>My Workspaces</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {workspaces.data?.map((workspace) => (
+                {workspaces.map((workspace) => (
                   <DropdownMenuItem
                     onClick={() => handleChangeWorkspace(workspace.id)}
                     key={workspace.id}

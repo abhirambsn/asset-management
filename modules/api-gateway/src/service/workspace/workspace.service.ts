@@ -24,4 +24,13 @@ export class WorkspaceService {
 
     return await lastValueFrom(response$);
   }
+
+  async getWorkspacesByTenant(tenantId: string) {
+    const pattern = { role: 'workspace', cmd: 'get_by_tenant' };
+    const payload = { tenantId };
+
+    const response$ = this.client.send(pattern, { payload }).pipe(take(1));
+
+    return await lastValueFrom(response$);
+  }
 }

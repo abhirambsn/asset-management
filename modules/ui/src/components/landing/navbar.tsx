@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "../ui/navigation-menu";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { LANDING_NAVBAR } from "@/utils/constants";
 import { Button } from "../ui/button";
 
@@ -29,11 +29,12 @@ const LandingNavbar = () => {
           <NavigationMenuList>
             {LANDING_NAVBAR.map((item) => (
               <NavigationMenuItem key={item.name}>
-                <Link to={item.url}>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    {item.name}
-                  </NavigationMenuLink>
-                </Link>
+                <NavigationMenuLink
+                  href={item.url}
+                  className={navigationMenuTriggerStyle()}
+                >
+                  {item.name}
+                </NavigationMenuLink>
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>

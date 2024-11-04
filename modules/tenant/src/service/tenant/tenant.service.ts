@@ -40,6 +40,16 @@ export class TenantService {
     });
   }
 
+  async tenantMeta(tenantWhereUniqueInput: Prisma.TenantWhereUniqueInput) {
+    return this.prisma.tenant.findUnique({
+      where: tenantWhereUniqueInput,
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }
+
   async tenants(params: {
     skip?: number;
     take?: number;

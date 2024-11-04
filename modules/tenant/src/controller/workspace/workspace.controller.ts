@@ -19,4 +19,14 @@ export class WorkspaceController {
       id,
     });
   }
+
+  @MessagePattern({ role: 'workspace', cmd: 'get_by_tenant' })
+  async getWorkspacesByTenant(data: MessagePayload) {
+    const tenantId = data.payload.tenantId;
+    return this.workspaceService.workspaces({
+      where: {
+        tenantId,
+      },
+    });
+  }
 }

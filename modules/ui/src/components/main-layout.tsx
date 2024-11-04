@@ -3,34 +3,59 @@ import DashboardSidebar from "./dashboard-sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useTenant } from "@/hooks/tenant-hook";
 import { useEffect } from "react";
-import { useCurrentWorkspace } from "@/store/workspace";
+import { useWorkspace } from "@/store/workspace";
 import { buildTitle } from "@/utils/helper";
 import Navbar from "./navbar";
 import { Separator } from "./ui/separator";
 import { useBreadcrumbNav } from "@/store/breadcrumb-nav";
-import { PERSONAL_WORKSPACE } from "@/utils/constants";
 import CreateAssetModal from "@/components/forms/create-asset";
+import { useAuthStore } from "@/store/auth-store";
 
 const MainLayout = () => {
-  const {tenant, subdomain} = useTenant();
+  const {
+    tenant,
+    subdomain,
+    invalidateTenant,
+    invalidateWorkspace,
+    PERSONAL_WORKSPACE,
+  } = useTenant();
   const navigate = useNavigate();
 
-  const {setCurrentWorkspace} = useCurrentWorkspace();
-  const {addToNavStack} = useBreadcrumbNav();
+  const { setCurrentWorkspace } = useWorkspace();
+  const { addToNavStack } = useBreadcrumbNav();
+  const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    if (!tenant || subdomain === '') {
+    if (!tenant || subdomain === "") {
       navigate("/landing");
     }
+    if (!isAuthenticated) {
+      navigate("/login");
+    }
+    invalidateTenant();
+    invalidateWorkspace();
     document.title = buildTitle(tenant.name);
 
     if (window.location.pathname === "/") {
       setCurrentWorkspace(PERSONAL_WORKSPACE);
       navigate("/workspace/personal");
-      addToNavStack(PERSONAL_WORKSPACE);
+      addToNavStack({
+        name: "Personal Workspace",
+        path: "/workspace/personal",
+      });
       return;
     }
-  }, [tenant, navigate, setCurrentWorkspace, addToNavStack, subdomain]);
+  }, [
+    tenant,
+    navigate,
+    setCurrentWorkspace,
+    addToNavStack,
+    subdomain,
+    isAuthenticated,
+    invalidateTenant,
+    invalidateWorkspace,
+    PERSONAL_WORKSPACE,
+  ]);
 
   return (
     <SidebarProvider>

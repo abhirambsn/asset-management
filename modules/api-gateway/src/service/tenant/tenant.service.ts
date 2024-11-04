@@ -10,7 +10,7 @@ export class TenantService {
   constructor(@Inject('TENANT_SERVICE') private readonly client: ClientProxy) {}
 
   async create(data: CreateTenantDto) {
-    const pattern = { cmd: 'tenant_create' };
+    const pattern = { cmd: 'create', role: 'tenant' };
     const payload = data;
 
     const response$ = this.client
@@ -24,7 +24,7 @@ export class TenantService {
   }
 
   async get(id: string) {
-    const pattern = { cmd: 'tenant_get' };
+    const pattern = { cmd: 'get', role: 'tenant' };
     const payload = { id };
 
     const response$ = this.client
@@ -33,6 +33,20 @@ export class TenantService {
 
     const response = await lastValueFrom(response$);
     this.logger.log(`Fetched tenant with id: ${id}`);
+
+    return response;
+  }
+
+  async getMeta(id: string) {
+    const pattern = { cmd: 'meta', role: 'tenant' };
+    const payload = { id };
+
+    const response$ = this.client
+      .send<TenantResponseDto>(pattern, { payload })
+      .pipe(take(1));
+
+    const response = await lastValueFrom(response$);
+    this.logger.log(`Fetched tenant metadata with id: ${id}`);
 
     return response;
   }

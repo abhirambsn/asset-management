@@ -23,26 +23,30 @@ import { ChevronUp, CogIcon, LogOutIcon, Plus, User2 } from "lucide-react";
 import { getAvatarUrl } from "@/utils/helper";
 import { useWorkspace } from "@/store/workspace";
 import { Link, useNavigate } from "react-router-dom";
-import { useTenant } from "@/hooks/tenant-hook";
 import { Separator } from "./ui/separator";
 import { useBreadcrumbNav } from "@/store/breadcrumb-nav";
 import { useAuthStore } from "@/store/auth-store";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useUser } from "@/store/user";
+import { useTenantMetadata } from "@/store/tenant-metadata";
+import { useTenantStore } from "@/store/tenant";
+import { useTenantUsers } from "@/store/tenant-users";
 
 const DashboardSidebar = () => {
   const navigate = useNavigate();
 
-  const { tenant } = useTenant();
-  const { user } = useUser();
+  const { tenant, invalidateTenant } = useTenantStore();
+  const { user, invalidateUser } = useUser();
+  const { invalidateTenantMetadata } = useTenantMetadata();
 
-  const { currentWorkspace, setCurrentWorkspace, workspaces } = useWorkspace();
+  const { currentWorkspace, setCurrentWorkspace, workspaces, clearState } =
+    useWorkspace();
   const { addToNavStack, removeFromNavStack } = useBreadcrumbNav();
   const { logout } = useAuthStore();
-  const queryClient = useQueryClient();
+  const { invalidateTenantUsers } = useTenantUsers();
 
   const [workspacesQuota, setWorkspacesQuota] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleChangeWorkspace = (workspaceId: string) => {
     const workspace = workspaces.find(
@@ -60,17 +64,25 @@ const DashboardSidebar = () => {
   };
 
   useEffect(() => {
-    setWorkspacesQuota(tenant.workspaces.length);
+    setWorkspacesQuota(tenant?.workspaces?.length || 0);
   }, [tenant]);
+
+  useEffect(() => {
+    if (Object.keys(user).length > 0) {
+      setIsAdmin(user.roles.includes("ADMIN"));
+    }
+  }, [user]);
 
   const logoutUser = () => {
     console.log("Logging out...");
+    invalidateTenant();
+    invalidateUser();
+    invalidateTenantMetadata();
+    invalidateTenantUsers();
+    clearState();
     logout();
-    queryClient.removeQueries();
     navigate("/login");
   };
-
-  const isAdmin = (user && user.roles.includes("ADMIN")) || false;
 
   return (
     <Sidebar collapsible="icon">

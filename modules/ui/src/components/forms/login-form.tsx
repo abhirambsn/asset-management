@@ -26,9 +26,11 @@ import { useEndpoint } from "@/hooks/endpoint-hook";
 import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/store/user";
+import { useTenantMetadata } from "@/store/tenant-metadata";
 
 const LoginForm = () => {
-  const { tenant } = useTenant();
+  const { tenantMetadata } = useTenantMetadata();
+  const { subdomain } = useTenant();
   const navigate = useNavigate();
   const { userService } = useEndpoint();
   const { authenticate } = useAuthStore();
@@ -36,10 +38,10 @@ const LoginForm = () => {
   const { setUser } = useUser();
 
   useEffect(() => {
-    if (!tenant || tenant.name === "main") {
+    if (!tenantMetadata || subdomain === "") {
       navigate("/register");
     }
-  }, [tenant, navigate]);
+  }, [tenantMetadata, subdomain, navigate]);
 
   const formSchema = z.object({
     username: z.string({ required_error: "Username is required" }).min(3),
@@ -58,7 +60,7 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    const payload = { ...data, tenantId: tenant.id };
+    const payload = { ...data, tenantId: tenantMetadata.id };
     try {
       const token = await userService.login(payload);
       authenticate(token, Date.now() + 1000 * 60 * 60);
@@ -82,7 +84,9 @@ const LoginForm = () => {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Login to {tenant?.name}</CardTitle>
+        <CardTitle className="text-2xl">
+          Login to {tenantMetadata.name}
+        </CardTitle>
         <CardDescription>
           Enter your username below to login to your account
         </CardDescription>

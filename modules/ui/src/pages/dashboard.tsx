@@ -16,23 +16,29 @@ import { useModalStore } from "@/store/create-modal";
 import { Plus } from "lucide-react";
 import { useWorkspace } from "@/store/workspace";
 import { useEffect } from "react";
+import { useTenant } from "@/hooks/tenant-hook";
 
 const DashboardPage = () => {
   const params = useParams();
   const { openModal } = useModalStore();
+  const { subdomain } = useTenant();
   const { currentWorkspace, setCurrentWorkspace, workspaces } = useWorkspace();
 
   useEffect(() => {
     if (!params.workspaceId) return;
     console.log("Workspace ID", params.workspaceId);
+    const workspaceId =
+      params.workspaceId === "personal"
+        ? `personal-${subdomain}`
+        : params.workspaceId;
     const workspace = workspaces.find(
-      (workspace) => workspace.id === params.workspaceId
+      (workspace) => workspace.id === workspaceId
     );
     if (!workspace) {
       throw new Error("Workspace not found");
     }
     setCurrentWorkspace(workspace);
-  }, [params, setCurrentWorkspace, workspaces]);
+  }, [params, setCurrentWorkspace, workspaces, subdomain]);
 
   return (
     <section className="grid grid-cols-3 gap-3">

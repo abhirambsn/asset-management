@@ -175,3 +175,9 @@ type UserState = {
   setUser: (user: User) => void;
   invalidateUser: () => void;
 }
+
+type TenantMetadataState = {
+  tenantMetadata: TenantMetadata;
+  setTenantMetadata: (metadata: TenantMetadata) => void;
+  invalidateTenantMetadata: () => void;
+}

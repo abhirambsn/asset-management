@@ -64,4 +64,44 @@ export class UserService {
       return Promise.reject("Error fetching tenant users");
     }
   }
+
+  async createTenantUser(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    tenantId: string,
+    username: string,
+    roles: string[],
+    token: string
+  ) {
+    const endpoint = "/auth/register";
+    const body = {
+      firstName,
+      lastName,
+      email,
+      password,
+      tenantId,
+      username,
+      roles,
+    }
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    }
+
+    try {
+      const response = await this.endpointClient.sendRequest<User>(
+        endpoint,
+        "POST",
+        body,
+        {},
+        headers
+      );
+      return response;
+    } catch (err) {
+      console.log("error creating tenant user", err);
+      return Promise.reject("Error creating tenant user");
+    }
+  }
 }

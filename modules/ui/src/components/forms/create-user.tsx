@@ -36,12 +36,20 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import { useAuthStore } from "@/store/auth-store";
+import { useEndpoint } from "@/hooks/endpoint-hook";
+import { useUser } from "@/store/user";
+import { useToast } from "@/hooks/use-toast";
 
 type Role = "ADMIN" | "READ" | "WRITE";
 
 const CreateUserModal = () => {
   const { isOpen, closeModal, type } = useModalStore();
   const { tenant } = useTenant();
+  const authState = useAuthStore();
+  const { userService } = useEndpoint();
+  const { user } = useUser();
+  const { toast } = useToast();
 
   const formSchema = z
     .object({
@@ -85,8 +93,42 @@ const CreateUserModal = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (!authState || !tenant) return;
+    if (!user.roles.includes("ADMIN")) {
+      toast({
+        title: "Unauthorized",
+        description: "You are not authorized to perform this action",
+        variant: "destructive",
+      });
+      return;
+    }
     console.log(data);
+    try {
+      const response = await userService.createTenantUser(
+        data.firstName,
+        data.lastName,
+        data.email,
+        data.password,
+        tenant.id,
+        data.username,
+        data.roles,
+        authState.token
+      );
+      console.log("DEBUG: response", response);
+      toast({
+        title: "Success",
+        description: "User created successfully",
+      });
+      closeForm();
+    } catch (err) {
+      console.error("DEBUG: error", err);
+      toast({
+        title: "Error",
+        description: "An error occurred while creating the User",
+        variant: "destructive",
+      });
+    }
   };
 
   const closeForm = () => {

@@ -42,12 +42,18 @@ import {
   TableRow,
 } from "../ui/table";
 import { useWorkspace } from "@/store/workspace";
+import { useEndpoint } from "@/hooks/endpoint-hook";
+import { useAuthStore } from "@/store/auth-store";
+import { useToast } from "@/hooks/use-toast";
 
 const CreateAssetModelModal = () => {
   const { isOpen, closeModal, type } = useModalStore();
   const [specName, setSpecName] = useState("");
   const [specValue, setSpecValue] = useState("");
   const { currentWorkspace } = useWorkspace();
+  const { tenantService } = useEndpoint();
+  const authState = useAuthStore();
+  const { toast } = useToast();
 
   const formSchema = z.object({
     id: z.string({ required_error: "ID is required" }),
@@ -74,8 +80,33 @@ const CreateAssetModelModal = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (!authState || !currentWorkspace) return;
     console.log(data);
+    try {
+      const response = await tenantService.createAssetModel(
+        data.name,
+        data.specs,
+        data.company,
+        data.releaseDate.getFullYear(),
+        data.type,
+        currentWorkspace.id,
+        authState.token
+      );
+      console.log("DEBUG: response", response);
+      toast({
+        title: "Success",
+        description: "Asset model created successfully",
+      });
+      closeForm();
+    } catch (err) {
+      console.log("Error creating asset model", err);
+      toast({
+        title: "Error",
+        description: "Error creating asset model",
+        variant: "destructive",
+      });
+    }
   };
 
   const slugify = (text: string) => _.kebabCase(text);

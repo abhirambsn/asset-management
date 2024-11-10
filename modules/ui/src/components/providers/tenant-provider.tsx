@@ -8,6 +8,7 @@ import { useTenantUsers } from "@/store/tenant-users";
 import { useUser } from "@/store/user";
 import { useWorkspace } from "@/store/workspace";
 import { getSubdomain } from "@/utils/helper";
+import { AxiosError } from "axios";
 import { createContext, useCallback, useEffect } from "react";
 import { redirect } from "react-router-dom";
 
@@ -96,26 +97,40 @@ export const TenantProvider = ({
       }
       console.log("Logged in as User", user);
       if (authState.isAuthenticated) {
-        console.log("Fetching Tenant...");
-        const tenant = await fetchTenant();
-        console.log("Tenant", tenant);
-        setTenant(tenant);
-        console.log("Fetching Tenant Users...");
-        const tenantUsers = await fetchUsersByTenant();
-        console.log("Tenant Users", tenantUsers);
-        console.log("Fetching Tenant Workspaces...");
-        const workspaces = await fetchworkspacesByTenant();
-        console.log("Tenant Workspaces", workspaces);
-        const personalWorkspace =
-          workspaces.find((w) => w.id === `personal-${tenant.id}`) ||
-          ({} as Workspace);
+        try {
+          console.log("Fetching Tenant...");
+          const tenant = await fetchTenant();
+          console.log("Tenant", tenant);
+          setTenant(tenant);
+          console.log("Fetching Tenant Users...");
+          const tenantUsers = await fetchUsersByTenant();
+          console.log("Tenant Users", tenantUsers);
+          console.log("Fetching Tenant Workspaces...");
+          const workspaces = await fetchworkspacesByTenant();
+          console.log("Tenant Workspaces", workspaces);
+          const personalWorkspace =
+            workspaces.find((w) => w.id === `personal-${tenant.id}`) ||
+            ({} as Workspace);
 
-        console.log("Personal Workspace", personalWorkspace);
+          console.log("Personal Workspace", personalWorkspace);
 
-        setPersonalWorkspace(personalWorkspace);
-        setCurrentWorkspace(personalWorkspace);
-        setWorkspaces(workspaces);
-        setUsers(tenantUsers);
+          setPersonalWorkspace(personalWorkspace);
+          setCurrentWorkspace(personalWorkspace);
+          setWorkspaces(workspaces);
+          setUsers(tenantUsers);
+        } catch (err: AxiosError | unknown) {
+          if (err instanceof AxiosError) {
+            console.log("Error fetching tenant", err.response?.data);
+            if (err.response?.status === 401) {
+              authState.logout();
+              window.location.href = "/login";
+            }
+          } else {
+            console.log("Error fetching tenant", err);
+          }
+
+          setLoading(false);
+        }
       } else {
         console.log("Fetching tenant metadata");
         const tenantMeta = await fetchTenantMetadata();
@@ -141,7 +156,7 @@ export const TenantProvider = ({
     invalidateTenantMetadata,
     invalidateTenantUsers,
     subdomain,
-    authState.isAuthenticated,
+    authState,
     user,
   ]);
 

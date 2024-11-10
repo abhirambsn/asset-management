@@ -12,6 +12,7 @@ import CreateAssetModal from "@/components/forms/create-asset";
 import { useAuthStore } from "@/store/auth-store";
 import { useLoading } from "@/store/loading";
 import LoaderSkeleton from "./skeleton/loader-skeleton";
+import CreateWorkspaceModal from "./forms/create-workspace";
 
 const MainLayout = () => {
   const { tenant, subdomain } = useTenant();
@@ -75,6 +76,7 @@ const MainLayout = () => {
         <LoaderSkeleton />
       )}
       <CreateAssetModal />
+      <CreateWorkspaceModal />
     </SidebarProvider>
   );
 };

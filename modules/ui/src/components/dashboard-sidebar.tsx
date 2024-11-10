@@ -31,6 +31,7 @@ import { useUser } from "@/store/user";
 import { useTenantMetadata } from "@/store/tenant-metadata";
 import { useTenantStore } from "@/store/tenant";
 import { useTenantUsers } from "@/store/tenant-users";
+import { useModalStore } from "@/store/create-modal";
 
 const DashboardSidebar = () => {
   const navigate = useNavigate();
@@ -47,6 +48,8 @@ const DashboardSidebar = () => {
 
   const [workspacesQuota, setWorkspacesQuota] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const { openModal } = useModalStore();
 
   const handleChangeWorkspace = (workspaceId: string) => {
     const workspace = workspaces.find(
@@ -124,7 +127,7 @@ const DashboardSidebar = () => {
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => openModal("workspace")}>
                   <Plus />
                   <span>Create Workspace</span>
                 </DropdownMenuItem>

@@ -18,7 +18,11 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { OWNER_DATA } from "@/utils/constants";
@@ -32,10 +36,24 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { createAssetFormSchema } from "@/utils/schema";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useWorkspace } from "@/store/workspace";
+import { useEndpoint } from "@/hooks/endpoint-hook";
+import { useAuthStore } from "@/store/auth-store";
+import { useToast } from "@/hooks/use-toast";
 
 const CreateAssetModal = () => {
   const { isOpen, closeModal, type } = useModalStore();
+  const { currentWorkspace } = useWorkspace();
+  const { tenantService } = useEndpoint();
+  const authState = useAuthStore();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof createAssetFormSchema>>({
     resolver: zodResolver(createAssetFormSchema),
@@ -47,15 +65,50 @@ const CreateAssetModal = () => {
       model: "",
       classification: "",
       assetValue: 0,
-      assetType: ""
+      assetType: "",
     },
   });
 
-  const onSubmit = (data: z.infer<typeof createAssetFormSchema>) => {
-    console.log(data);
+  const closeForm = () => {
+    form.reset();
+    closeModal();
   };
+
+  const onSubmit = async (data: z.infer<typeof createAssetFormSchema>) => {
+    if (!authState || !currentWorkspace) return;
+    console.log(data);
+
+    try {
+      const response = await tenantService.createAsset(
+        data.name,
+        currentWorkspace.id,
+        data.assetType,
+        data.model,
+        data.os,
+        data.osVersion,
+        data.owner,
+        data.classification,
+        data.assetValue,
+        authState.token
+      );
+      console.log("DEBUG: response", response);
+      toast({
+        title: "Success",
+        description: "Asset created successfully",
+      });
+      closeForm();
+    } catch (err) {
+      console.error("DEBUG: error", err);
+      toast({
+        title: "Error",
+        description: "An error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <Dialog open={isOpen && type === "asset"} onOpenChange={closeModal}>
+    <Dialog open={isOpen && type === "asset"} onOpenChange={closeForm}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Register Asset</DialogTitle>
@@ -260,7 +313,7 @@ const CreateAssetModal = () => {
               />
             </div>
             <div className="flex gap-2">
-            <FormField
+              <FormField
                 control={form.control}
                 name="os"
                 render={({ field }) => (
@@ -289,7 +342,9 @@ const CreateAssetModal = () => {
                         <Command>
                           <CommandInput placeholder="Search Model..." />
                           <CommandList>
-                            <CommandEmpty>No Operating System found.</CommandEmpty>
+                            <CommandEmpty>
+                              No Operating System found.
+                            </CommandEmpty>
                             <CommandGroup>
                               {OWNER_DATA.map((row) => (
                                 <CommandItem
@@ -379,42 +434,53 @@ const CreateAssetModal = () => {
                 )}
               />
             </div>
-            
-            <FormField 
-            control={form.control}
-            name="classification"
-            render={({field}) => (
-              <FormItem className="grid gap-2">
-                <FormLabel>Asset Class</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a Asset Classification" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="critical">Critical</SelectItem>
-                    <SelectItem value="important">Important</SelectItem>
-                    <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="not_important">Not Important</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )} />
 
-            <FormField 
-            control={form.control}
-            name="assetValue"
-            render={() => (
-              <FormItem className="grid gap-2">
-                <FormLabel>Asset Value</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="Asset Value" {...form.register('assetValue', {valueAsNumber: true})} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="classification"
+              render={({ field }) => (
+                <FormItem className="grid gap-2">
+                  <FormLabel>Asset Class</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a Asset Classification" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="critical">Critical</SelectItem>
+                      <SelectItem value="important">Important</SelectItem>
+                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="not_important">
+                        Not Important
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="assetValue"
+              render={() => (
+                <FormItem className="grid gap-2">
+                  <FormLabel>Asset Value</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Asset Value"
+                      {...form.register("assetValue", { valueAsNumber: true })}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button type="submit">
               <Plus />
               <span>Create Asset</span>

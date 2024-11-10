@@ -22,16 +22,21 @@ import {
 import { useTenant } from "@/hooks/tenant-hook";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEndpoint } from "@/hooks/endpoint-hook";
+import { useToast } from "@/hooks/use-toast";
+import _ from "lodash";
 
 const RegisterForm = () => {
-  const { tenant } = useTenant();
+  const { tenant, subdomain } = useTenant();
+  const { userService } = useEndpoint();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (tenant && tenant.name !== "main") {
+    if (tenant && subdomain !== "") {
       navigate("/login");
     }
-  }, [tenant, navigate]);
+  }, [tenant, subdomain, navigate]);
   const formSchema = z
     .object({
       firstName: z.string().min(2, {
@@ -41,6 +46,9 @@ const RegisterForm = () => {
         message: "Last name should contain minimum of 2 characters",
       }),
       email: z.string().email({ message: "Enter a valid email" }),
+      username: z.string().min(3, {
+        message: "Username should contain minimum of 3 characters",
+      }),
       password: z
         .string()
         .min(6, { message: "Password should contain mimimum of 6 characters" })
@@ -65,13 +73,51 @@ const RegisterForm = () => {
       password: "",
       firstName: "",
       lastName: "",
+      username: "",
       confirmPassword: "",
       tenantName: "",
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const slugify = (text: string) => _.kebabCase(text);
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (!tenant || subdomain !== "") return;
     console.log(data);
+    if (data.password !== data.confirmPassword) {
+      toast({
+        title: "Bad Request",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await userService.createTenantUser(
+        data.firstName,
+        data.lastName,
+        data.email,
+        data.password,
+        slugify(data.tenantName),
+        data.username,
+        ["ADMIN"],
+        ""
+      );
+
+      console.log("DEBUG: response", response);
+      toast({
+        title: "Success",
+        description: "Tenant created successfully",
+      });
+    } catch (err) {
+      console.error("DEBUG: error", err);
+      toast({
+        title: "Error",
+        description: "An error occurred while creating the Tenant",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -126,23 +172,38 @@ const RegisterForm = () => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="grid gap-2">
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="m@example.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex gap-2">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="grid gap-2">
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="m@example.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem className="grid gap-2">
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="john.doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <div className="flex gap-2">
               <FormField
                 control={form.control}

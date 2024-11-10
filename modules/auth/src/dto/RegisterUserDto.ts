@@ -18,7 +18,7 @@ export class RegisterUserDto {
   password: string;
 
   @IsNotEmpty()
-  tenantId: string;
+  tenantName: string;
 
   roles?: string[];
 }

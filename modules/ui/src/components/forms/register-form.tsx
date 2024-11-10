@@ -24,7 +24,6 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEndpoint } from "@/hooks/endpoint-hook";
 import { useToast } from "@/hooks/use-toast";
-import _ from "lodash";
 
 const RegisterForm = () => {
   const { tenant, subdomain } = useTenant();
@@ -79,8 +78,6 @@ const RegisterForm = () => {
     },
   });
 
-  const slugify = (text: string) => _.kebabCase(text);
-
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (!tenant || subdomain !== "") return;
     console.log(data);
@@ -99,16 +96,16 @@ const RegisterForm = () => {
         data.lastName,
         data.email,
         data.password,
-        slugify(data.tenantName),
+        data.tenantName,
         data.username,
         ["ADMIN"],
         ""
       );
 
-      console.log("DEBUG: response", response);
+      console.log("DEBUG: user create response", response);
       toast({
         title: "Success",
-        description: "Tenant created successfully",
+        description: "User created successfully",
       });
     } catch (err) {
       console.error("DEBUG: error", err);

@@ -9,9 +9,24 @@ import { PrismaService } from './service/prisma/prisma.service';
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsersController } from './controller/users/users.controller';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
-  imports: [UsersModule, AuthModule, ConfigModule.forRoot({ isGlobal: true })],
+  imports: [
+    ClientsModule.register([
+      {
+        name: 'TENANT_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: process.env.TENANT_SERVICE_HOST || 'localhost',
+          port: (process.env.TENANT_SERVICE_PORT || 53002) as number,
+        },
+      },
+    ]),
+    UsersModule,
+    AuthModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+  ],
   controllers: [AppController, AuthController, UsersController],
   providers: [AppService, UsersService, PrismaService, AuthService],
 })

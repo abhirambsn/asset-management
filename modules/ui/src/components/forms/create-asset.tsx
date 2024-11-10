@@ -47,6 +47,7 @@ import { useWorkspace } from "@/store/workspace";
 import { useEndpoint } from "@/hooks/endpoint-hook";
 import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/hooks/use-toast";
+import { useTenantUsers } from "@/store/tenant-users";
 
 const CreateAssetModal = () => {
   const { isOpen, closeModal, type } = useModalStore();
@@ -54,6 +55,7 @@ const CreateAssetModal = () => {
   const { tenantService } = useEndpoint();
   const authState = useAuthStore();
   const { toast } = useToast();
+  const { users } = useTenantUsers();
 
   const form = useForm<z.infer<typeof createAssetFormSchema>>({
     resolver: zodResolver(createAssetFormSchema),
@@ -107,6 +109,14 @@ const CreateAssetModal = () => {
     }
   };
 
+  const getName = (value: string) => {
+    const user = users.find((o) => o.id === value);
+    if (!user) {
+      return "";
+    }
+    return `${user.firstName} ${user.lastName}`;
+  };
+
   return (
     <Dialog open={isOpen && type === "asset"} onOpenChange={closeForm}>
       <DialogContent>
@@ -150,9 +160,7 @@ const CreateAssetModal = () => {
                             !field.value && "text-muted-foreground"
                           )}
                         >
-                          {field.value
-                            ? OWNER_DATA.find((o) => o.id === field.value)?.name
-                            : "Select Owner"}
+                          {field.value ? getName(field.value) : "Select Owner"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
@@ -163,10 +171,10 @@ const CreateAssetModal = () => {
                         <CommandList>
                           <CommandEmpty>No owner found.</CommandEmpty>
                           <CommandGroup>
-                            {OWNER_DATA.map((row) => (
+                            {users.map((row) => (
                               <CommandItem
-                                value={row.name}
-                                key={row.name}
+                                value={`${row.firstName} ${row.lastName}`}
+                                key={row.id}
                                 onSelect={() => {
                                   form.setValue("owner", row.id);
                                 }}
@@ -174,12 +182,12 @@ const CreateAssetModal = () => {
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    row.name === field.value
+                                    row.id === field.value
                                       ? "opacity-100"
                                       : "opacity-0"
                                   )}
                                 />
-                                {row.name}
+                                {`${row.firstName} ${row.lastName}`}
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -211,8 +219,9 @@ const CreateAssetModal = () => {
                             )}
                           >
                             {field.value
-                              ? OWNER_DATA.find((o) => o.id === field.value)
-                                  ?.name
+                              ? currentWorkspace?.assetTypes.find(
+                                  (o) => o.id === field.value
+                                )?.name
                               : "Select Type"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
@@ -224,7 +233,7 @@ const CreateAssetModal = () => {
                           <CommandList>
                             <CommandEmpty>No asset type found.</CommandEmpty>
                             <CommandGroup>
-                              {OWNER_DATA.map((row) => (
+                              {currentWorkspace?.assetTypes.map((row) => (
                                 <CommandItem
                                   value={row.name}
                                   key={row.name}
@@ -270,8 +279,9 @@ const CreateAssetModal = () => {
                             )}
                           >
                             {field.value
-                              ? OWNER_DATA.find((o) => o.id === field.value)
-                                  ?.name
+                              ? currentWorkspace?.assetModels.find(
+                                  (o) => o.id === field.value
+                                )?.name
                               : "Select Model"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
@@ -283,7 +293,7 @@ const CreateAssetModal = () => {
                           <CommandList>
                             <CommandEmpty>No model found.</CommandEmpty>
                             <CommandGroup>
-                              {OWNER_DATA.map((row) => (
+                              {currentWorkspace?.assetModels.map((row) => (
                                 <CommandItem
                                   value={row.name}
                                   key={row.name}
@@ -331,8 +341,9 @@ const CreateAssetModal = () => {
                             )}
                           >
                             {field.value
-                              ? OWNER_DATA.find((o) => o.id === field.value)
-                                  ?.name
+                              ? currentWorkspace?.osTypes.find(
+                                  (o) => o.id === field.value
+                                )?.name
                               : "Select Operating System"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
@@ -340,13 +351,13 @@ const CreateAssetModal = () => {
                       </PopoverTrigger>
                       <PopoverContent className="w-full p-0">
                         <Command>
-                          <CommandInput placeholder="Search Model..." />
+                          <CommandInput placeholder="Search OS Type..." />
                           <CommandList>
                             <CommandEmpty>
                               No Operating System found.
                             </CommandEmpty>
                             <CommandGroup>
-                              {OWNER_DATA.map((row) => (
+                              {currentWorkspace?.osTypes.map((row) => (
                                 <CommandItem
                                   value={row.name}
                                   key={row.name}
@@ -380,55 +391,9 @@ const CreateAssetModal = () => {
                 render={({ field }) => (
                   <FormItem className="grid gap-2 w-full">
                     <FormLabel>OS Version</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "w-full justify-between",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value
-                              ? OWNER_DATA.find((o) => o.id === field.value)
-                                  ?.name
-                              : "Select OS Version"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0">
-                        <Command>
-                          <CommandInput placeholder="Search OS Version..." />
-                          <CommandList>
-                            <CommandEmpty>No OS Version found.</CommandEmpty>
-                            <CommandGroup>
-                              {OWNER_DATA.map((row) => (
-                                <CommandItem
-                                  value={row.name}
-                                  key={row.name}
-                                  onSelect={() => {
-                                    form.setValue("osVersion", row.id);
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      row.name === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  {row.name}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <FormControl>
+                      <Input placeholder="1.0" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

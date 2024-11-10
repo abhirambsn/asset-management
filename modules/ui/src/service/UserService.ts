@@ -70,7 +70,7 @@ export class UserService {
     lastName: string,
     email: string,
     password: string,
-    tenantId: string,
+    tenantName: string,
     username: string,
     roles: string[],
     token: string
@@ -81,7 +81,7 @@ export class UserService {
       lastName,
       email,
       password,
-      tenantId,
+      tenantName,
       username,
       roles,
     }

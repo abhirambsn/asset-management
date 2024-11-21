@@ -118,7 +118,7 @@ const CreateUserModal = () => {
       console.log("DEBUG: response", response);
       toast({
         title: "Success",
-        description: "User created successfully",
+        description: "User created successfully, refresh page to view",
       });
       closeForm();
     } catch (err) {

@@ -52,7 +52,7 @@ export class AuthService {
 
   async register(data: RegisterUserDto): Promise<User> {
     const hashedPassword = await this.userService.hashPassword(data.password);
-    const { tenantName, ...rest } = data;
+    const { tenantName, internalTenantUser, ...rest } = data;
     const userResponse = await this.userService.createUser({
       ...rest,
       tenantId: kebabCase(tenantName),
@@ -60,15 +60,16 @@ export class AuthService {
       roles: (data.roles as Role[]) ?? ['ADMIN'],
     });
 
-    const cmd = { cmd: 'create', role: 'tenant' };
-    const payload = {
-      name: tenantName,
-      owner: userResponse.id,
-    };
+    if (!internalTenantUser) {
+      const cmd = { cmd: 'create', role: 'tenant' };
+      const payload = {
+        name: tenantName,
+        owner: userResponse.id,
+      };
 
-    const response$ = this.client.send(cmd, { payload }).pipe(take(1));
-    await lastValueFrom(response$);
-    console.log('Tenant created'); // TODO: Remove this
+      const response$ = this.client.send(cmd, { payload }).pipe(take(1));
+      await lastValueFrom(response$);
+    }
 
     return userResponse;
   }

@@ -30,7 +30,7 @@ const CreateAssetTypeModal = () => {
   const { isOpen, closeModal, type } = useModalStore();
   const authState = useAuthStore();
   const { tenantService } = useEndpoint();
-  const { currentWorkspace } = useWorkspace();
+  const { currentWorkspace, setCurrentWorkspace } = useWorkspace();
   const { toast } = useToast();
 
   const formSchema = z.object({
@@ -60,6 +60,7 @@ const CreateAssetTypeModal = () => {
         title: "Success",
         description: "Asset type created successfully",
       });
+      setCurrentWorkspace({...currentWorkspace, assetTypes: [...currentWorkspace.assetTypes, response]});
       closeForm();
     } catch (err) {
       console.error("DEBUG: error", err);

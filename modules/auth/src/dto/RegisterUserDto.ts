@@ -21,4 +21,6 @@ export class RegisterUserDto {
   tenantName: string;
 
   roles?: string[];
+
+  internalTenantUser?: boolean;
 }

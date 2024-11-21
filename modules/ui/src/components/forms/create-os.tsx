@@ -30,7 +30,7 @@ const CreateOSModal = () => {
   const { isOpen, closeModal, type } = useModalStore();
   const authState = useAuthStore();
   const { tenantService } = useEndpoint();
-  const { currentWorkspace } = useWorkspace();
+  const { currentWorkspace, setCurrentWorkspace } = useWorkspace();
   const { toast } = useToast();
 
   const formSchema = z.object({
@@ -60,6 +60,10 @@ const CreateOSModal = () => {
         title: "Success",
         description: "OS Type created successfully",
       });
+      setCurrentWorkspace({
+        ...currentWorkspace,
+        osTypes: [...currentWorkspace.osTypes, response],
+      })
       closeForm();
     } catch (err) {
       console.error("DEBUG: error", err);

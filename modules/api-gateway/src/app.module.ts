@@ -22,12 +22,12 @@ import { AssetsService } from './service/assets/assets.service';
 const SERVICE_MAP = [
   {
     name: 'TENANT_SERVICE',
-    host: process.env.TENANT_SERVICE_HOST || 'localhost',
+    host: process.env.TENANT_SERVICE_HOST || '127.0.0.1',
     port: process.env.TENANT_SERVICE_PORT || 53002,
   },
   {
     name: 'AUTH_SERVICE',
-    host: process.env.AUTH_SERVICE_HOST || 'localhost',
+    host: process.env.AUTH_SERVICE_HOST || '127.0.0.1',
     port: process.env.AUTH_SERVICE_PORT || 53001,
   },
   // {

@@ -50,7 +50,7 @@ const CreateAssetModelModal = () => {
   const { isOpen, closeModal, type } = useModalStore();
   const [specName, setSpecName] = useState("");
   const [specValue, setSpecValue] = useState("");
-  const { currentWorkspace } = useWorkspace();
+  const { currentWorkspace, setCurrentWorkspace } = useWorkspace();
   const { tenantService } = useEndpoint();
   const authState = useAuthStore();
   const { toast } = useToast();
@@ -98,6 +98,7 @@ const CreateAssetModelModal = () => {
         title: "Success",
         description: "Asset model created successfully",
       });
+      setCurrentWorkspace({...currentWorkspace, assetModels: [...currentWorkspace.assetModels, response]});
       closeForm();
     } catch (err) {
       console.log("Error creating asset model", err);

@@ -17,12 +17,14 @@ import { Plus } from "lucide-react";
 import { useWorkspace } from "@/store/workspace";
 import { useEffect } from "react";
 import { useTenant } from "@/hooks/tenant-hook";
+import { useUser } from "@/store/user";
 
 const DashboardPage = () => {
   const params = useParams();
   const { openModal } = useModalStore();
   const { subdomain } = useTenant();
   const { currentWorkspace, setCurrentWorkspace, workspaces } = useWorkspace();
+  const {user} = useUser();
 
   useEffect(() => {
     if (!params.workspaceId) return;
@@ -82,6 +84,7 @@ const DashboardPage = () => {
           <Button
             variant="outline"
             size="icon"
+            disabled={user && !(user?.roles.includes("ADMIN") || user?.roles.includes("WRITE"))}
             onClick={() => openModal("asset")}
           >
             <Plus />

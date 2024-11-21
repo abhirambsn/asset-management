@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { OWNER_DATA } from "@/utils/constants";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import {
   Command,
@@ -51,7 +50,7 @@ import { useTenantUsers } from "@/store/tenant-users";
 
 const CreateAssetModal = () => {
   const { isOpen, closeModal, type } = useModalStore();
-  const { currentWorkspace } = useWorkspace();
+  const { currentWorkspace, setCurrentWorkspace } = useWorkspace();
   const { tenantService } = useEndpoint();
   const authState = useAuthStore();
   const { toast } = useToast();
@@ -97,6 +96,10 @@ const CreateAssetModal = () => {
       toast({
         title: "Success",
         description: "Asset created successfully",
+      });
+      setCurrentWorkspace({
+        ...currentWorkspace,
+        assets: [...currentWorkspace.assets, response],
       });
       closeForm();
     } catch (err) {

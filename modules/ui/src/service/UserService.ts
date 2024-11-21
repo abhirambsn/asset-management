@@ -84,6 +84,7 @@ export class UserService {
       tenantName,
       username,
       roles,
+      internalTenantUser: true,
     }
 
     const headers = {
